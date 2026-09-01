@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpHive Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="login-box">
+        <div class="logo">
+            🐝 <span>HelpHive</span>
+        </div>
+        <h1>Welcome back to HelpHive</h1>
+        <p class="subtitle">
+            Sign in to manage your listings or find your next home.
+        </p>
+
+        <form id="loginForm" method = "POST">
+            <label>Email or Phone Number</label>
+            <div class="input-box">
+                <i class="fa-regular fa-envelope"></i>
+                <input id="email" type="text" placeholder="e.g. juan.dela@email.com or 09171234567">
+                <p id="emailError" class="error"></p>
+            </div>
+
+            <label>Password</label>
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input id="password" type="password" placeholder="*****">
+                <i class="fa-regular fa-eye eye" id="togglePassword"></i>
+                <p id="passwordError" class="error"></p>
+            
+            </div>
+
+            <div class="options">
+                <label class="remember">
+                    <input type="checkbox">
+                    Remember me
+                </label>
+
+                <a href="#">Forgot Password?</a>
+            </div>
+
+            <button type="submit">Log In</button>
+        </form>
+
+        <div class="signup">
+            Don't have an account?
+            <a href="#">Sign Up</a>
+        </div>
+
+        <div class="divider">
+            Or, sign in with
+        </div>
+
+        <div class="socials">
+            <div class="social">
+                <i class="fab fa-google"></i>
+            </div>
+
+            <div class="social">
+                <i class="fab fa-facebook-f"></i>
+            </div>
+
+            <div class="social">
+                <i class="fab fa-apple"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+
+    <div>HelpHive Borongan</div>
+
+    <div class="footer-links">
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Contact Us</a>
+        <i class="fab fa-facebook"></i>
+        <i class="fab fa-instagram"></i>
+    </div>
+
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
