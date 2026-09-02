@@ -5,22 +5,15 @@
     font-family:'Poppins',sans-serif;
 }
 
-body{
-
-    background:linear-gradient(
+body {
+    background: linear-gradient(
         to bottom,
         #eaca78e1 0%,
         #e6d112 40%,
         #fbcd50 100%
     );
-
-    min-height:100vh;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-
-}
+    min-height: 100vh;
+}  
 
 .container{
 
