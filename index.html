@@ -5,88 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HelpHive Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="font-poppins text-slate-800 min-h-screen flex flex-col justify-between antialiased" style="background: linear-gradient(to bottom, #eaca78e1 0%, #e6d112 40%, #fbcd50 100%);">
 
-<div class="container">
-    <div class="login-box">
-        <div class="logo">
-            🐝 <span>HelpHive</span>
+<div class="flex-grow flex items-center justify-center p-6 sm:p-10">
+    <div class="bg-white w-full max-w-[430px] p-8 sm:p-[35px] rounded-2xl shadow-xl">
+        <div class="text-center text-[28px] font-bold text-[#d89a00] mb-4">
+            🐝 <span class="text-[#444] text-[30px]">HelpHive</span>
         </div>
-        <h1>Welcome back to HelpHive</h1>
-        <p class="subtitle">
+        
+        <h1 class="text-center text-3xl font-bold text-[#222] mb-2">Welcome back to HelpHive</h1>
+        <p class="text-center text-[#666] text-sm mb-6">
             Sign in to manage your listings or find your next home.
         </p>
 
-        <form id="loginForm" method = "POST">
-            <label>Email or Phone Number</label>
-            <div class="input-box">
-                <i class="fa-regular fa-envelope"></i>
-                <input id="email" type="text" placeholder="e.g. juan.dela@email.com or 09171234567">
-                <p id="emailError" class="error"></p>
+        <form id="loginForm" method="POST">
+            <label class="block font-semibold text-[#333] mb-2 text-sm">Email or Phone Number</label>
+            <div class="relative mb-5">
+                <span class="absolute left-4 top-4 text-[#999]">
+                    <i class="fa-regular fa-envelope"></i>
+                </span>
+                <input id="email" type="text" placeholder="e.g. juan.dela@email.com or 09171234567" 
+                    class="w-full h-12 pl-11 pr-11 border border-[#ddd] rounded-lg text-[15px] outline-none focus:border-[#d89a00]">
+                <p id="emailError" class="text-xs text-rose-500 mt-1"></p>
             </div>
 
-            <label>Password</label>
-            <div class="input-box">
-                <i class="fa-solid fa-lock"></i>
-                <input id="password" type="password" placeholder="*****">
-                <i class="fa-regular fa-eye eye" id="togglePassword"></i>
-                <p id="passwordError" class="error"></p>
-            
+            <label class="block font-semibold text-[#333] mb-2 text-sm">Password</label>
+            <div class="relative mb-5">
+                <span class="absolute left-4 top-4 text-[#999]">
+                    <i class="fa-solid fa-lock"></i>
+                </span>
+                <input id="password" type="password" placeholder="*****" 
+                    class="w-full h-12 pl-11 pr-11 border border-[#ddd] rounded-lg text-[15px] outline-none focus:border-[#d89a00]">
+                <span class="absolute right-4 top-4 text-[#888] cursor-pointer">
+                    <i class="fa-regular fa-eye eye" id="togglePassword"></i>
+                </span>
+                <p id="passwordError" class="text-xs text-rose-500 mt-1"></p>
             </div>
 
-            <div class="options">
-                <label class="remember">
-                    <input type="checkbox">
+            <div class="flex justify-between items-center mb-5 text-sm">
+                <label class="flex items-center gap-2 cursor-pointer text-[#333]">
+                    <input type="checkbox" class="w-4 h-4 accent-[#d89a00]">
                     Remember me
                 </label>
-
-                <a href="#">Forgot Password?</a>
+                <a href="#" class="text-[#c99400] no-underline hover:underline">Forgot Password?</a>
             </div>
 
-            <button type="submit">Log In</button>
+            <button type="submit" class="w-full h-[50px] bg-[#d89a00] hover:bg-[#b98200] text-white font-semibold rounded-lg transition-all cursor-pointer text-lg">
+                Log In
+            </button>
         </form>
 
-        <div class="signup">
+        <div class="text-center my-6 text-sm text-[#333]">
             Don't have an account?
-            <a href="#">Sign Up</a>
+            <a href="#" class="text-[#d89a00] font-semibold no-underline hover:underline">Sign Up</a>
         </div>
 
-        <div class="divider">
+        <div class="text-center text-[#777] mb-5 text-sm">
             Or, sign in with
         </div>
 
-        <div class="socials">
-            <div class="social">
+        <div class="flex justify-center gap-5">
+            <div class="w-[52px] h-[52px] border border-[#ddd] rounded-full flex justify-center items-center text-[22px] text-[#555] cursor-pointer transition-all hover:bg-[#fff3c4] hover:-translate-y-1">
                 <i class="fab fa-google"></i>
             </div>
-
-            <div class="social">
+            <div class="w-[52px] h-[52px] border border-[#ddd] rounded-full flex justify-center items-center text-[22px] text-[#555] cursor-pointer transition-all hover:bg-[#fff3c4] hover:-translate-y-1">
                 <i class="fab fa-facebook-f"></i>
             </div>
-
-            <div class="social">
+            <div class="w-[52px] h-[52px] border border-[#ddd] rounded-full flex justify-center items-center text-[22px] text-[#555] cursor-pointer transition-all hover:bg-[#fff3c4] hover:-translate-y-1">
                 <i class="fab fa-apple"></i>
             </div>
         </div>
     </div>
 </div>
 
-<footer>
-
+<footer class="bg-[#efb43b] text-[#333] flex flex-col sm:flex-row justify-between items-center py-4 px-6 sm:px-[60px] text-sm gap-4 text-center sm:text-left">
     <div>HelpHive Borongan</div>
-
-    <div class="footer-links">
-        <a href="#">Terms of Service</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Contact Us</a>
-        <i class="fab fa-facebook"></i>
-        <i class="fab fa-instagram"></i>
+    
+    <div class="flex flex-wrap justify-center items-center gap-5">
+        <a href="#" class="no-underline text-[#333] hover:underline">Terms of Service</a>
+        <a href="#" class="no-underline text-[#333] hover:underline">Privacy Policy</a>
+        <a href="#" class="no-underline text-[#333] hover:underline">Contact Us</a>
+        <div class="flex items-center gap-3 text-lg">
+            <i class="fab fa-facebook cursor-pointer"></i>
+            <i class="fab fa-instagram cursor-pointer"></i>
+        </div>
     </div>
-
 </footer>
 
 <script src="script.js"></script>
