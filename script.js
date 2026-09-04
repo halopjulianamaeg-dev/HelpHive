@@ -1,61 +1,55 @@
-const email = "testing@gmail.com";
-const phone = "09171234567";
-const password = "123";
+import { supabase } from './supabaseClient.js';
 
-document.getElementById("loginForm").addEventListener("submit", function(event) {
+const loginForm = document.getElementById("loginForm");
+
+loginForm.addEventListener("submit", async function (event) {
 
     event.preventDefault();
 
-    let userEmail = document.getElementById("email").value;
-    let userPassword = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-    let emailError = document.getElementById("emailError");
-    let passwordError = document.getElementById("passwordError");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
 
+    // Clear previous errors
     emailError.textContent = "";
     passwordError.textContent = "";
 
-    // Check if email is empty
-    if (userEmail == "") {
-        emailError.textContent = "Please enter your email or phone number.";
+    // Check email
+    if (email === "") {
+        emailError.textContent = "Please enter your email.";
         return;
     }
 
-    // Check if password is empty
-    if (userPassword == "") {
+    // Check password
+    if (password === "") {
         passwordError.textContent = "Please enter your password.";
         return;
     }
 
-    const isEmail = userEmail.includes("@");
-    const isPhone = /^[0-9]{11}$/.test(userEmail);
+    // Login with Supabase
+    const { error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
 
-    if (!isEmail && !isPhone) {
-        emailError.textContent = "Enter a valid email or phone number.";
+    if (error) {
+       console.error("Supabase Login error:", error);
+       passwordError.textContent = error.message;
         return;
     }
 
-    // Check login
-    if (
-    (userEmail === email || userEmail === phone) &&
-    userPassword === password
-) {
-
     alert("Login Successful!");
-    window.location.href = "dashboard.html";
 
-} else {
-
-    passwordError.textContent =
-        "Incorrect email/phone number or password.";
-
-}
 });
 
-const passwordInput = document.getElementById("password");
-const toggle = document.getElementById("togglePassword");
 
-toggle.addEventListener("click", function () {
+// Show/Hide Password
+const passwordInput = document.getElementById("password");
+const togglePassword = document.getElementById("togglePassword");
+
+togglePassword.addEventListener("click", function () {
 
     if (passwordInput.type === "password") {
         passwordInput.type = "text";
