@@ -42,6 +42,8 @@ loginForm.addEventListener("submit", async function (event) {
 
     alert("Login Successful!");
 
+window.location.href = "dashboard.html";
+
 });
 
 

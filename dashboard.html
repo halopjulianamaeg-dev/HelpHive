@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HelpHive - Find Your Home</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .property-card {
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .property-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .favorite-button.active {
+            color: #d89a00;
+            background: #fff8df;
+        }
+
+        .favorite-button.active i {
+            font-weight: 900;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+        }
+
+        .no-results {
+            display: none;
+        }
+
+        .no-results.show {
+            display: block;
+        }
+    </style>
+</head>
+
+
+<body class="font-poppins bg-[#fffaf0] text-slate-800 antialiased">
+
+<div class="min-h-screen flex flex-col">
+
+
+    <!-- =====================================================
+         NAVIGATION BAR
+    ====================================================== -->
+
+    <header class="bg-white border-b border-[#eee] sticky top-0 z-50 shadow-sm">
+
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+
+            <!-- Logo -->
+            <div
+                class="flex items-center gap-2 cursor-pointer"
+                onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+            >
+
+                <div class="text-2xl font-bold text-[#d89a00] flex items-center gap-2">
+
+                    <span class="text-3xl">🐝</span>
+
+                    <span class="text-slate-800 font-extrabold tracking-tight text-xl sm:text-2xl">
+                        HelpHive
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Navigation -->
+            <nav class="hidden lg:flex items-center gap-8 font-medium text-sm text-slate-600">
+
+                <a
+                    href="#properties"
+                    class="text-[#c99400] font-semibold border-b-2 border-[#d89a00] pb-1"
+                >
+                    Find a Home
+                </a>
+
+                <a
+                    href="#properties"
+                    class="hover:text-[#c99400] transition-colors"
+                >
+                    Saved Favorites
+                </a>
+
+            </nav>
+
+
+            <!-- User Area -->
+            <div class="flex items-center gap-4">
+
+                <button onclick="handleNotifications()"
+    class="relative w-10 h-10 rounded-full hover:bg-[#fff8df] flex items-center justify-center transition-all text-slate-600">
+                    <i class="fa-regular fa-bell text-lg"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+                </button>
+
+
+                <div class="hidden sm:flex items-center gap-3 pl-3 border-l border-[#eee]">
+
+                    <div
+                        id="userAvatar"
+                        class="w-9 h-9 rounded-full bg-[#d89a00] text-white flex items-center justify-center font-bold text-sm shadow-sm"
+                    >
+                        U
+                    </div>
+
+                    <div>
+
+                        <p
+                            id="userName"
+                            class="text-xs font-semibold text-slate-800"
+                        >
+                            User
+                        </p>
+
+                        <p class="text-[10px] text-slate-400">
+                            Student Seeker
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         HERO SLIDER
+    ====================================================== -->
+
+    <section class="relative w-full h-[400px] overflow-hidden bg-slate-200">
+
+
+        <!-- Slide 1 -->
+
+        <div class="hero-slide absolute inset-0 opacity-100 transition-opacity duration-1000">
+
+            <img
+                src="images/dorm1.jpg"
+                alt="Student accommodation"
+                class="w-full h-full object-cover"
+            >
+
+            <div
+                class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center text-white"
+            >
+
+                <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
+                    FIND YOUR NEXT HOME
+                </h2>
+
+                <p class="mt-3 text-lg sm:text-xl font-medium">
+                    Comfortable • Affordable • Near Your School
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Slide 2 -->
+
+        <div class="hero-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+
+            <img
+                src="images/dorm2.jpg"
+                alt="Modern boarding house"
+                class="w-full h-full object-cover"
+            >
+
+            <div
+                class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center text-white"
+            >
+
+                <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
+                    A PLACE TO CALL HOME
+                </h2>
+
+                <p class="mt-3 text-lg sm:text-xl font-medium">
+                    Find a comfortable place to stay in Borongan
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Slide 3 -->
+
+        <div class="hero-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+
+            <img
+                src="images/dorm3.jpg"
+                alt="Student dormitory"
+                class="w-full h-full object-cover"
+            >
+
+            <div
+                class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center text-white"
+            >
+
+                <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
+                    LIVE CLOSER TO CAMPUS
+                </h2>
+
+                <p class="mt-3 text-lg sm:text-xl font-medium">
+                    Spend less time commuting, more time studying
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Previous -->
+
+        <button
+            type="button"
+            onclick="previousSlide()"
+            class="absolute left-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/50 hover:bg-black/75 text-white text-2xl flex items-center justify-center transition"
+            aria-label="Previous slide"
+        >
+            &#10094;
+        </button>
+
+
+
+        <!-- Next -->
+
+        <button
+            type="button"
+            onclick="nextSlide()"
+            class="absolute right-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/50 hover:bg-black/75 text-white text-2xl flex items-center justify-center transition"
+            aria-label="Next slide"
+        >
+            &#10095;
+        </button>
+
+
+
+        <!-- Slide indicators -->
+
+        <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+
+            <button
+                type="button"
+                onclick="showSlide(0)"
+                class="slide-dot w-3 h-3 rounded-full bg-white"
+                aria-label="Go to slide 1"
+            ></button>
+
+            <button
+                type="button"
+                onclick="showSlide(1)"
+                class="slide-dot w-3 h-3 rounded-full bg-white/50"
+                aria-label="Go to slide 2"
+            ></button>
+
+            <button
+                type="button"
+                onclick="showSlide(2)"
+                class="slide-dot w-3 h-3 rounded-full bg-white/50"
+                aria-label="Go to slide 3"
+            ></button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="max-w-7xl w-full mx-auto p-6 md:p-10 space-y-8 flex-1">
+
+
+        <!-- =================================================
+             SEARCH / FILTER SECTION
+        ================================================== -->
+
+        <section id="searchSection">
+
+            <div class="bg-gradient-to-r from-[#d89a00] to-[#f5c94b] rounded-2xl p-6 md:p-8 text-white shadow-md">
+
+                <h2 class="text-2xl md:text-3xl font-bold mb-2">
+                    Find your next home in Borongan
+                </h2>
+
+                <p class="text-sm opacity-90 mb-6 max-w-xl">
+                    Search verified dormitories, boarding houses, and condormitel units near schools and city centers.
+                </p>
+
+
+                <!-- Search Box -->
+
+                <div class="bg-white rounded-xl p-3 flex flex-col md:flex-row gap-3 text-slate-800 shadow-lg">
+
+
+                    <!-- Location -->
+
+                    <div class="flex-1 flex items-center gap-3 px-3 py-2 border-b md:border-b-0 md:border-r border-[#eee]">
+
+                        <i class="fa-solid fa-location-dot text-[#d89a00]"></i>
+
+                        <div class="w-full">
+
+                            <p class="text-[10px] uppercase font-semibold text-slate-400">
+                                Location
+                            </p>
+
+                            <input
+                                id="locationSearch"
+                                type="text"
+                                placeholder="Search Borongan..."
+                                class="filter-input text-sm font-medium outline-none w-full bg-transparent"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Room Type -->
+
+                    <div class="flex-1 flex items-center gap-3 px-3 py-2 border-b md:border-b-0 md:border-r border-[#eee]">
+
+                        <i class="fa-solid fa-bed text-[#d89a00]"></i>
+
+                        <div class="w-full">
+
+                            <p class="text-[10px] uppercase font-semibold text-slate-400">
+                                Room Type
+                            </p>
+
+                            <select
+                                id="propertyType"
+                                class="filter-select text-sm font-medium outline-none w-full bg-transparent cursor-pointer"
+                            >
+
+                                <option value="">
+                                    Any Room Type
+                                </option>
+
+                                <option value="shared">
+                                    Shared Room
+                                </option>
+
+                                <option value="private">
+                                    Private Room
+                                </option>
+
+                                <option value="bunk">
+                                    Bunk Bed
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Budget -->
+
+                    <div class="flex-1 flex items-center gap-3 px-3 py-2">
+
+                        <i class="fa-solid fa-peso-sign text-[#d89a00]"></i>
+
+                        <div class="w-full">
+
+                           <p class="text-[10px] uppercase font-semibold text-slate-400">
+                             Budget Range
+                           </p>
+
+                            <input
+                                id="budgetSearch"
+                                type="number"
+                                min="0"
+                                step="100"
+                                placeholder="e.g. ₱2,500"
+                                class="filter-input text-sm font-medium outline-none w-full bg-transparent"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Search Button -->
+
+                    <button
+                        id="searchButton"
+                        type="button"
+                        onclick="searchProperties()"
+                        class="bg-[#d89a00] hover:bg-[#b98200] text-white font-semibold px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Search
+                    </button>
+
+                </div>
+
+
+                <!-- Reset + Results -->
+
+                <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+                    <p
+                        id="resultsCount"
+                        class="text-sm font-medium text-white/90"
+                    >
+                        Showing 6 properties
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="resetFilters()"
+                        class="text-sm font-semibold underline hover:no-underline text-white self-start sm:self-auto"
+                    >
+                        Reset Filters
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PROPERTY LISTINGS
+        ================================================== -->
+
+        <section id="properties">
+
+
+            <!-- Section Header -->
+
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 mb-6">
+
+                <div>
+
+                    <p class="text-xs uppercase tracking-widest font-bold text-[#d89a00] mb-1">
+                        Browse Listings
+                    </p>
+
+                    <h3 class="font-bold text-2xl text-slate-800">
+                        Boarding Houses & Dormitories
+                    </h3>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Find a comfortable and affordable place near your school.
+                    </p>
+
+                </div>
+
+                 <a href="login.html" class="text-sm font-semibold text-[#c99400] hover:underline">All Listings</a>
+
+            </div>
+
+
+
+            <!-- Property Grid -->
+
+            <div
+                id="propertyGrid"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+
+
+                <!-- =================================================
+                     PROPERTY 1
+                ================================================== -->
+
+                <article
+                    class="property-card bg-white rounded-2xl border border-[#eee] overflow-hidden shadow-sm"
+                    data-location="Near City Center Borongan"
+                    data-price="3500"
+                    data-type="bunk"
+                    data-name="Borongan Student Loft"
+                >
+
+                    <div class="h-52 relative overflow-hidden">
+
+                        <img
+                            src="images/bh1.jpg"
+                            alt="Borongan Student Loft"
+                            class="w-full h-full object-cover"
+                        >
+
+                        <span class="absolute top-3 left-3 bg-[#d89a00] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                            Featured
+                        </span>
+
+                        <button
+                            type="button"
+                            class="favorite-button absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-slate-400 shadow-sm hover:scale-110 transition-transform"
+                            onclick="toggleFavorite(this, 'Borongan Student Loft')"
+                            aria-label="Save Borongan Student Loft"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="p-5">
+
+                        <div class="flex justify-between items-start gap-3 mb-1">
+
+                            <h4 class="font-bold text-slate-800 text-base">
+                                Borongan Student Loft
+                            </h4>
+
+                            <span class="text-[#c99400] font-bold text-sm whitespace-nowrap">
+                                ₱3,500
+                                <span class="text-xs font-normal text-slate-400">
+                                    /mo
+                                </span>
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-xs text-slate-500 mb-4">
+                            <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i>
+                            Near City Center, Borongan
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-3 text-xs text-slate-600 mb-4 pt-3 border-t border-[#eee]">
+
+                            <span>
+                                <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
+                                Bunk Bed
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-wifi text-[#d89a00] mr-1"></i>
+                                Free WiFi
+                            </span>
+
+                        </div>
+
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                WiFi
+                            </span>
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                Study Area
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="window.location.href='login.html'"
+                            class="w-full bg-[#fff8df] hover:bg-[#d89a00] hover:text-white text-[#c99400] font-semibold py-2.5 rounded-xl transition-all text-sm"
+                        >
+                            View Property
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     PROPERTY 2
+                ================================================== -->
+
+                <article
+                    class="property-card bg-white rounded-2xl border border-[#eee] overflow-hidden shadow-sm"
+                    data-location="Lalawigan Borongan"
+                    data-price="4500"
+                    data-type="private"
+                    data-name="Sunrise Boarding House"
+                >
+
+                    <div class="h-52 relative overflow-hidden">
+
+                        <img
+                            src="images/bh2.jpg"
+                            alt="Sunrise Boarding House"
+                            class="w-full h-full object-cover"
+                        >
+
+                        <span class="absolute top-3 left-3 bg-[#d89a00] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                            Verified
+                        </span>
+
+                        <button
+                            type="button"
+                            class="favorite-button absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-slate-400 shadow-sm hover:scale-110 transition-transform"
+                            onclick="toggleFavorite(this, 'Sunrise Boarding House')"
+                            aria-label="Save Sunrise Boarding House"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="p-5">
+
+                        <div class="flex justify-between items-start gap-3 mb-1">
+
+                            <h4 class="font-bold text-slate-800 text-base">
+                                Sunrise Boarding House
+                            </h4>
+
+                            <span class="text-[#c99400] font-bold text-sm whitespace-nowrap">
+                                ₱4,500
+                                <span class="text-xs font-normal text-slate-400">
+                                    /mo
+                                </span>
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-xs text-slate-500 mb-4">
+                            <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i>
+                            Lalawigan, Borongan
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-3 text-xs text-slate-600 mb-4 pt-3 border-t border-[#eee]">
+
+                            <span>
+                                <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
+                                Private Room
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-snowflake text-[#d89a00] mr-1"></i>
+                                AC Ready
+                            </span>
+
+                        </div>
+
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                Aircon
+                            </span>
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                WiFi
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="viewProperty('Sunrise Boarding House')"
+                            class="w-full bg-[#fff8df] hover:bg-[#d89a00] hover:text-white text-[#c99400] font-semibold py-2.5 rounded-xl transition-all text-sm"
+                        >
+                            View Property
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     PROPERTY 3
+                ================================================== -->
+
+                <article
+                    class="property-card bg-white rounded-2xl border border-[#eee] overflow-hidden shadow-sm"
+                    data-location="Songco Borongan"
+                    data-price="2800"
+                    data-type="shared"
+                    data-name="Hive Dormitory Hub"
+                >
+
+                    <div class="h-52 relative overflow-hidden">
+
+                        <img
+                            src="images/bh3.jpg"
+                            alt="Hive Dormitory Hub"
+                            class="w-full h-full object-cover"
+                        >
+
+                        <span class="absolute top-3 left-3 bg-[#d89a00] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                            Verified
+                        </span>
+
+                        <button
+                            type="button"
+                            class="favorite-button absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-slate-400 shadow-sm hover:scale-110 transition-transform"
+                            onclick="toggleFavorite(this, 'Hive Dormitory Hub')"
+                            aria-label="Save Hive Dormitory Hub"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="p-5">
+
+                        <div class="flex justify-between items-start gap-3 mb-1">
+
+                            <h4 class="font-bold text-slate-800 text-base">
+                                Hive Dormitory Hub
+                            </h4>
+
+                            <span class="text-[#c99400] font-bold text-sm whitespace-nowrap">
+                                ₱2,800
+                                <span class="text-xs font-normal text-slate-400">
+                                    /mo
+                                </span>
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-xs text-slate-500 mb-4">
+                            <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i>
+                            Songco, Borongan
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-3 text-xs text-slate-600 mb-4 pt-3 border-t border-[#eee]">
+
+                            <span>
+                                <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
+                                Shared Room
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-bolt text-[#d89a00] mr-1"></i>
+                                Utilities Inc.
+                            </span>
+
+                        </div>
+
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                Utilities
+                            </span>
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                WiFi
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="viewProperty('Hive Dormitory Hub')"
+                            class="w-full bg-[#fff8df] hover:bg-[#d89a00] hover:text-white text-[#c99400] font-semibold py-2.5 rounded-xl transition-all text-sm"
+                        >
+                            View Property
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     PROPERTY 4
+                ================================================== -->
+
+                <article
+                    class="property-card bg-white rounded-2xl border border-[#eee] overflow-hidden shadow-sm"
+                    data-location="Borongan City Center"
+                    data-price="5500"
+                    data-type="private"
+                    data-name="Cozy Student Haven"
+                >
+
+                    <div class="h-52 relative overflow-hidden">
+
+                        <img
+                            src="images/bh4.jpg"
+                            alt="Cozy Student Haven"
+                            class="w-full h-full object-cover"
+                        >
+
+                        <span class="absolute top-3 left-3 bg-[#d89a00] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                            New
+                        </span>
+
+                        <button
+                            type="button"
+                            class="favorite-button absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-slate-400 shadow-sm hover:scale-110 transition-transform"
+                            onclick="toggleFavorite(this, 'Cozy Student Haven')"
+                            aria-label="Save Cozy Student Haven"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="p-5">
+
+                        <div class="flex justify-between items-start gap-3 mb-1">
+
+                            <h4 class="font-bold text-slate-800 text-base">
+                                Cozy Student Haven
+                            </h4>
+
+                            <span class="text-[#c99400] font-bold text-sm whitespace-nowrap">
+                                ₱5,500
+                                <span class="text-xs font-normal text-slate-400">
+                                    /mo
+                                </span>
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-xs text-slate-500 mb-4">
+                            <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i>
+                            City Center, Borongan
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-3 text-xs text-slate-600 mb-4 pt-3 border-t border-[#eee]">
+
+                            <span>
+                                <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
+                                Private Room
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-book-open text-[#d89a00] mr-1"></i>
+                                Study Area
+                            </span>
+
+                        </div>
+
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                Laundry
+                            </span>
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                WiFi
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="viewProperty('Cozy Student Haven')"
+                            class="w-full bg-[#fff8df] hover:bg-[#d89a00] hover:text-white text-[#c99400] font-semibold py-2.5 rounded-xl transition-all text-sm"
+                        >
+                            View Property
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     PROPERTY 5
+                ================================================== -->
+
+                <article
+                    class="property-card bg-white rounded-2xl border border-[#eee] overflow-hidden shadow-sm"
+                    data-location="Borongan City Center"
+                    data-price="3800"
+                    data-type="shared"
+                    data-name="Student Corner"
+                >
+
+                    <div class="h-52 relative overflow-hidden">
+
+                        <img
+                            src="images/bh5.jpg"
+                            alt="Student Corner"
+                            class="w-full h-full object-cover"
+                        >
+
+                        <span class="absolute top-3 left-3 bg-[#d89a00] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                            Verified
+                        </span>
+
+                        <button
+                            type="button"
+                            class="favorite-button absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-slate-400 shadow-sm hover:scale-110 transition-transform"
+                            onclick="toggleFavorite(this, 'Student Corner')"
+                            aria-label="Save Student Corner"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="p-5">
+
+                        <div class="flex justify-between items-start gap-3 mb-1">
+
+                            <h4 class="font-bold text-slate-800 text-base">
+                                Student Corner
+                            </h4>
+
+                            <span class="text-[#c99400] font-bold text-sm whitespace-nowrap">
+                                ₱3,800
+                                <span class="text-xs font-normal text-slate-400">
+                                    /mo
+                                </span>
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-xs text-slate-500 mb-4">
+                            <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i>
+                            City Center, Borongan
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-3 text-xs text-slate-600 mb-4 pt-3 border-t border-[#eee]">
+
+                            <span>
+                                <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
+                                Shared Room
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-shirt text-[#d89a00] mr-1"></i>
+                                Laundry
+                            </span>
+
+                        </div>
+
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                WiFi
+                            </span>
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                Laundry
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="viewProperty('Student Corner')"
+                            class="w-full bg-[#fff8df] hover:bg-[#d89a00] hover:text-white text-[#c99400] font-semibold py-2.5 rounded-xl transition-all text-sm"
+                        >
+                            View Property
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     PROPERTY 6
+                ================================================== -->
+
+                <article
+                    class="property-card bg-white rounded-2xl border border-[#eee] overflow-hidden shadow-sm"
+                    data-location="Borongan City Center"
+                    data-price="6000"
+                    data-type="private"
+                    data-name="BeeNest Boarding House"
+                >
+
+                    <div class="h-52 relative overflow-hidden">
+
+                        <img
+                            src="images/bh6.jpg"
+                            alt="BeeNest Boarding House"
+                            class="w-full h-full object-cover"
+                        >
+
+                        <span class="absolute top-3 left-3 bg-[#d89a00] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                            Premium
+                        </span>
+
+                        <button
+                            type="button"
+                            class="favorite-button absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-slate-400 shadow-sm hover:scale-110 transition-transform"
+                            onclick="toggleFavorite(this, 'BeeNest Boarding House')"
+                            aria-label="Save BeeNest Boarding House"
+                        >
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="p-5">
+
+                        <div class="flex justify-between items-start gap-3 mb-1">
+
+                            <h4 class="font-bold text-slate-800 text-base">
+                                BeeNest Boarding House
+                            </h4>
+
+                            <span class="text-[#c99400] font-bold text-sm whitespace-nowrap">
+                                ₱6,000
+                                <span class="text-xs font-normal text-slate-400">
+                                    /mo
+                                </span>
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-xs text-slate-500 mb-4">
+                            <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i>
+                            City Center, Borongan
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-3 text-xs text-slate-600 mb-4 pt-3 border-t border-[#eee]">
+
+                            <span>
+                                <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
+                                Private Room
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-snowflake text-[#d89a00] mr-1"></i>
+                                Aircon
+                            </span>
+
+                        </div>
+
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                WiFi
+                            </span>
+
+                            <span class="bg-[#fff8df] text-[#9b7000] text-[10px] px-2 py-1 rounded-md">
+                                Kitchen
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="viewProperty('BeeNest Boarding House')"
+                            class="w-full bg-[#fff8df] hover:bg-[#d89a00] hover:text-white text-[#c99400] font-semibold py-2.5 rounded-xl transition-all text-sm"
+                        >
+                            View Property
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+            </div>
+
+
+
+            <!-- No Results -->
+
+            <div
+                id="noResults"
+                class="no-results bg-white border border-[#eee] rounded-2xl p-12 text-center mt-6"
+            >
+
+                <div class="w-16 h-16 rounded-full bg-[#fff8df] text-[#d89a00] flex items-center justify-center mx-auto mb-4">
+
+                    <i class="fa-solid fa-house-circle-xmark text-2xl"></i>
+
+                </div>
+
+                <h3 class="font-bold text-lg text-slate-800 mb-2">
+                    No properties found
+                </h3>
+
+                <p class="text-sm text-slate-500 mb-5">
+                    Try changing your location, room type, or maximum budget.
+                </p>
+
+                <button
+                    type="button"
+                    onclick="resetFilters()"
+                    class="bg-[#d89a00] hover:bg-[#b98200] text-white font-semibold px-5 py-2.5 rounded-xl transition"
+                >
+                    Reset Filters
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="border-t border-[#eee] pt-6 pb-2">
+
+            <div class="flex flex-col sm:flex-row justify-between gap-3 text-xs text-slate-400">
+
+                <p>
+                    © 2026 HelpHive. Find a place you can call home.
+                </p>
+
+                <p>
+                    Student Boarding House Finder
+                </p>
+
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     DASHBOARD JAVASCRIPT
+====================================================== -->
+
+<script type="module" src="dashboard.js"></script>
+
+</body>
+</html>
