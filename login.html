@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="4.png">
     <title>HelpHive Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -19,137 +20,137 @@
         }
     </script>
 </head>
-<body class="font-poppins text-slate-800 min-h-screen flex flex-col justify-between antialiased" style="background: linear-gradient(to bottom, #eaca78e1 0%, #e6d112 40%, #fbcd50 100%);">
+<body class="font-poppins text-slate-800 min-h-screen flex flex-col justify-between antialiased bg-white">
 
-<div class="flex-grow flex items-center justify-center p-6 sm:p-10">
-    <div class="bg-white w-full max-w-[430px] p-8 sm:p-[35px] rounded-2xl shadow-xl">
-        <div class="text-center text-[28px] font-bold text-[#d89a00] mb-4">
-            🐝 <span class="text-[#444] text-[30px]">HelpHive</span>
-        </div>
+<div class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-10">
+    <div class="w-full max-w-5xl flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
         
-        <h1 class="text-center text-3xl font-bold text-[#222] mb-2">Welcome back to HelpHive</h1>
-        <p class="text-center text-[#666] text-sm mb-6">
-            Sign in to manage your listings or find your next home.
-        </p>
+        <!-- Left Side: Overlapping Photo Cards -->
+        <div class="hidden lg:flex relative items-center justify-center w-1/2">
+            <div class="absolute w-[340px] h-[420px] bg-[#fefce8] rounded-full blur-2xl -z-10 opacity-70"></div>
+            
+            <div class="relative flex items-center justify-center w-full h-[460px]">
+                <div class="absolute -left-6 top-8 w-[200px] h-[380px] rounded-3xl overflow-hidden shadow-xl transform -rotate-6 border-4 border-[#FFD700] bg-slate-100">
+                    <img src="1.jpg" alt="Listing preview" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
+                        <span class="text-white text-xs font-medium">Cozy Spaces</span>
+                    </div>
+                </div>
 
-        <form id="loginForm">
+                <div class="absolute -right-6 top-12 w-[200px] h-[380px] rounded-3xl overflow-hidden shadow-xl transform rotate-6 border-4 border-[#FFD700] bg-slate-100">
+                    <img src="3.jpg" alt="Listing preview" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
+                        <span class="text-white text-xs font-medium">Find Roommates</span>
+                    </div>
+                </div>
 
-    <label class="block font-semibold text-[#333] mb-2 text-sm">
-        Email or Phone Number
-    </label>
-
-    <div class="relative mb-5">
-
-        <span class="absolute left-4 top-4 text-[#999]">
-            <i class="fa-regular fa-envelope"></i>
-        </span>
-
-        <input
-            type="email"
-            id="email"
-            placeholder="Email"
-            class="w-full h-12 pl-11 pr-11 border border-[#ddd] rounded-lg text-[15px] outline-none focus:border-[#d89a00]"
-            required>
-
-        <p id="emailError" class="text-xs text-rose-500 mt-1"></p>
-
-    </div>
-
-
-    <label class="block font-semibold text-[#333] mb-2 text-sm">
-        Password
-    </label>
-
-    <div class="relative mb-5">
-
-        <span class="absolute left-4 top-4 text-[#999]">
-            <i class="fa-solid fa-lock"></i>
-        </span>
-
-        <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            class="w-full h-12 pl-11 pr-11 border border-[#ddd] rounded-lg text-[15px] outline-none focus:border-[#d89a00]"
-            required>
-
-        <span class="absolute right-4 top-4 text-[#888] cursor-pointer">
-            <i class="fa-regular fa-eye eye" id="togglePassword"></i>
-        </span>
-
-        <p id="passwordError" class="text-xs text-rose-500 mt-1"></p>
-
-    </div>
-
-
-    <div class="flex justify-between items-center mb-5 text-sm">
-
-        <label class="flex items-center gap-2 cursor-pointer text-[#333]">
-
-            <input
-                type="checkbox"
-                class="w-4 h-4 accent-[#d89a00]">
-
-            Remember me
-
-        </label>
-
-        <a
-            href="#"
-            class="text-[#c99400] no-underline hover:underline">
-            Forgot Password?
-        </a>
-
-    </div>
-
-
-    <button
-        type="submit"
-        class="w-full h-[50px] bg-[#d89a00] hover:bg-[#b98200] text-white font-semibold rounded-lg transition-all cursor-pointer text-lg">
-
-        Log In
-
-    </button>
-
-</form>
-        <div class="text-center my-6 text-sm text-[#333]">
-            Don't have an account?
-            <a href="#" class="text-[#d89a00] font-semibold no-underline hover:underline">Sign Up</a>
-        </div>
-
-        <div class="text-center text-[#777] mb-5 text-sm">
-            Or, sign in with
-        </div>
-
-        <div class="flex justify-center gap-5">
-            <div class="w-[52px] h-[52px] border border-[#ddd] rounded-full flex justify-center items-center text-[22px] text-[#555] cursor-pointer transition-all hover:bg-[#fff3c4] hover:-translate-y-1">
-                <i class="fab fa-google"></i>
-            </div>
-            <div class="w-[52px] h-[52px] border border-[#ddd] rounded-full flex justify-center items-center text-[22px] text-[#555] cursor-pointer transition-all hover:bg-[#fff3c4] hover:-translate-y-1">
-                <i class="fab fa-facebook-f"></i>
-            </div>
-            <div class="w-[52px] h-[52px] border border-[#ddd] rounded-full flex justify-center items-center text-[22px] text-[#555] cursor-pointer transition-all hover:bg-[#fff3c4] hover:-translate-y-1">
-                <i class="fab fa-apple"></i>
+                <div class="absolute z-10 w-[240px] h-[420px] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#FFD700] bg-slate-100 transform -translate-y-2">
+                    <img src="2.jpg" alt="Featured HelpHive community" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                        <span class="text-xs font-bold text-amber-300 uppercase tracking-wider mb-1">HelpHive Community</span>
+                        <h4 class="text-sm font-semibold">Your next home awaits</h4>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Right Side: Pastel Yellow Login Card (Border Removed) -->
+        <div class="bg-[#fefce8] w-full max-w-[420px] p-8 sm:p-9 rounded-2xl shadow-xl">
+            <div class="text-center text-[28px] font-bold text-[#b45309] mb-3">
+                 <img src="4.png" alt="HelpHive Logo" class="w-10 h-10 object-contain mx-auto">
+                  <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">HelpHive</h1>
+
+            </div>
+            
+            <h1 class="text-center text-2xl font-bold text-[#222] mb-1"></h1>
+            <p class="text-center text-[#666] text-xs mb-6">
+                            </p>
+
+            <form id="loginForm">
+                <label class="block font-semibold text-[#333] mb-1.5 text-xs">
+                    Email or Phone Number
+                </label>
+                <div class="relative mb-4">
+                    <span class="absolute left-3.5 top-3.5 text-[#888] text-sm">
+                        <i class="fa-regular fa-envelope"></i>
+                    </span>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Email or phone number"
+                        class="w-full h-11 pl-10 pr-10 bg-white border border-[#e5e7eb] rounded-lg text-sm outline-none focus:border-[#ca8a04] focus:ring-1 focus:ring-[#ca8a04]"
+                        required>
+                    <p id="emailError" class="text-xs text-rose-500 mt-1"></p>
+                </div>
+
+                <label class="block font-semibold text-[#333] mb-1.5 text-xs">
+                    Password
+                </label>
+                <div class="relative mb-4">
+                    <span class="absolute left-3.5 top-3.5 text-[#888] text-sm">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Password"
+                        class="w-full h-11 pl-10 pr-10 bg-white border border-[#e5e7eb] rounded-lg text-sm outline-none focus:border-[#ca8a04] focus:ring-1 focus:ring-[#ca8a04]"
+                        required>
+                    <span class="absolute right-3.5 top-3.5 text-[#888] cursor-pointer text-sm">
+                        <i class="fa-regular fa-eye eye" id="togglePassword"></i>
+                    </span>
+                    <p id="passwordError" class="text-xs text-rose-500 mt-1"></p>
+                </div>
+
+                <div class="flex justify-between items-center mb-5 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer text-[#333]">
+                        <input type="checkbox" class="w-4 h-4 accent-[#ca8a04] rounded">
+                        Remember me
+                    </label>
+                    <a href="#" class="text-[#b45309] font-medium no-underline hover:underline">
+                        Forgot Password?
+                    </a>
+                </div>
+
+                <!-- White Button with Colored Text -->
+                <button
+                    type="submit"
+                    class="w-full h-11 bg-white border border-[#e5e7eb] hover:bg-slate-50 text-[#b45309] font-semibold rounded-lg transition-all cursor-pointer text-sm shadow-sm">
+                    Log In
+                </button>
+            </form>
+
+            <div class="flex items-center my-5 text-xs text-[#888] before:flex-1 before:border-t before:border-[#e5e7eb] before:mr-3 after:flex-1 after:border-t after:border-[#e5e7eb] after:ml-3">
+                OR
+            </div>
+
+          <div class="text-center mt-6 text-xs text-[#333]">
+           Don't have an account?
+            <a href="signup.html" class="text-[#b45309] font-semibold no-underline hover:underline">
+             Sign up
+    </a>
+</div>
+        </div>
+
     </div>
 </div>
 
-<footer class="bg-[#efb43b] text-[#333] flex flex-col sm:flex-row justify-between items-center py-4 px-6 sm:px-[60px] text-sm gap-4 text-center sm:text-left">
-    <div>HelpHive Borongan</div>
+<footer class="bg-white border-t border-slate-100 text-[#555] flex flex-col sm:flex-row justify-between items-center py-4 px-6 sm:px-[60px] text-xs gap-4 text-center sm:text-left">
+    <div>HelpHive Borongan &copy; 2026</div>
     
     <div class="flex flex-wrap justify-center items-center gap-5">
-        <a href="#" class="no-underline text-[#333] hover:underline">Terms of Service</a>
-        <a href="#" class="no-underline text-[#333] hover:underline">Privacy Policy</a>
-        <a href="#" class="no-underline text-[#333] hover:underline">Contact Us</a>
-        <div class="flex items-center gap-3 text-lg">
-            <i class="fab fa-facebook cursor-pointer"></i>
-            <i class="fab fa-instagram cursor-pointer"></i>
+        <a href="#" class="no-underline text-[#555] hover:underline">Terms of Service</a>
+        <a href="#" class="no-underline text-[#555] hover:underline">Privacy Policy</a>
+        <a href="#" class="no-underline text-[#555] hover:underline">Contact Us</a>
+        <div class="flex items-center gap-3 text-base">
+            <i class="fab fa-facebook cursor-pointer hover:text-[#b45309]"></i>
+            <i class="fab fa-instagram cursor-pointer hover:text-[#b45309]"></i>
         </div>
     </div>
 </footer>
 
-<script type= "module" src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="../js/script.js"></script>
 
 </body>
 </html>

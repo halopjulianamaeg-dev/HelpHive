@@ -1,13 +1,11 @@
-import { supabase } from './supabaseClient.js';
+import { supabase } from './supabaseconfig.js';
 
-/* =========================
-   SUPABASE USER
-========================= */
+/* ===== SUPABASE USER (TEMPORARILY CLOSED TO ACCESS DASHBOARD!) ===== */
 
-const { data: { user } } = await supabase.auth.getUser();
+//const { data: { user } } = await supabase.auth.getUser();
 
-if (!user) {
-    window.location.href = "login.html";
+/* if (!user) {
+   window.location.href = "login.html";
 } else {
     const displayName =
         user.user_metadata?.full_name ||
@@ -16,25 +14,16 @@ if (!user) {
         "User";
 
     const initial = displayName.charAt(0).toUpperCase();
-
     const userNameEl = document.getElementById("userName");
     const userAvatarEl = document.getElementById("userAvatar");
 
-    if (userNameEl) {
-        userNameEl.textContent = displayName;
-    }
+    if (userNameEl) userNameEl.textContent = displayName;
+    if (userAvatarEl) userAvatarEl.textContent = initial;
+} */
 
-    if (userAvatarEl) {
-        userAvatarEl.textContent = initial;
-    }
-}
-
-/* =========================
-   HERO SLIDESHOW
-========================= */
+/* ===== HERO SLIDESHOW ===== */
 
 let currentSlide = 0;
-
 const slides = document.querySelectorAll(".hero-slide");
 const dots = document.querySelectorAll(".slide-dot");
 
@@ -49,12 +38,12 @@ function showSlide(index) {
         currentSlide = index;
     }
 
-    slides.forEach(slide => {
+    slides.forEach((slide) => {
         slide.classList.remove("opacity-100");
         slide.classList.add("opacity-0");
     });
 
-    dots.forEach(dot => {
+    dots.forEach((dot) => {
         dot.classList.remove("bg-white");
         dot.classList.add("bg-white/50");
     });
@@ -78,11 +67,11 @@ function previousSlide() {
 
 showSlide(0);
 
-setInterval(nextSlide, 5000);
+setInterval(() => {
+    nextSlide();
+}, 5000);
 
-/* =========================
-   PROPERTY SEARCH
-========================= */
+/* ===== PROPERTY SEARCH ===== */
 
 function searchProperties() {
     const locationInput = document.getElementById("locationSearch");
@@ -91,18 +80,21 @@ function searchProperties() {
     const properties = document.querySelectorAll(".property-card");
 
     const location = locationInput?.value.trim().toLowerCase() || "";
-    const roomType = roomTypeInput?.value || "";
+    const roomType = roomTypeInput?.value.trim().toLowerCase() || "";
     const budgetValue = budgetInput?.value.trim();
     const budget = budgetValue === "" ? null : Number(budgetValue);
 
     let visibleCount = 0;
 
-    properties.forEach(property => {
+    properties.forEach((property) => {
         const propertyLocation =
             (property.dataset.location || "").toLowerCase();
 
-        const propertyType = property.dataset.type || "";
-        const propertyPrice = Number(property.dataset.price || 0);
+        const propertyType =
+            (property.dataset.type || "").trim().toLowerCase();
+
+        const propertyPrice =
+            Number(property.dataset.price || 0);
 
         let showProperty = true;
 
@@ -132,10 +124,11 @@ function searchProperties() {
             }
         }
 
-        property.style.display = showProperty ? "" : "none";
-
         if (showProperty) {
+            property.style.display = "";
             visibleCount++;
+        } else {
+            property.style.display = "none";
         }
     });
 
@@ -145,20 +138,27 @@ function searchProperties() {
         roomType,
         budget
     );
+
+    const noResults = document.getElementById("noResults");
+
+    if (noResults) {
+        noResults.style.display =
+            visibleCount === 0 ? "block" : "none";
+    }
 }
 
-/* =========================
-   RESULTS COUNT
-========================= */
+/* ===== RESULTS COUNT ===== */
+function formatLocation(location) {
+    return location
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+}
 
-function updateResultsCount(
-    visibleCount,
-    location,
-    roomType,
-    budget
-) {
+function updateResultsCount(visibleCount, location, roomType, budget) {
     const resultCount = document.getElementById("resultsCount");
-    const activeFilters = document.getElementById("activeFilters");
+    const activeFilters = document.getElementById("activeFilterText");
+    const roomTypeInput = document.getElementById("propertyType");
 
     if (resultCount) {
         resultCount.textContent =
@@ -169,16 +169,25 @@ function updateResultsCount(
         const filters = [];
 
         if (location) {
-            filters.push(`Location: ${location}`);
+            const locationText =
+                document.getElementById("locationSearch")?.value.trim() || location;
+
+            filters.push(`Location: ${formatLocation(locationText)}`);
         }
 
         if (roomType) {
-            filters.push(`Room: ${roomType}`);
+            const roomTypeText =
+                roomTypeInput?.options[roomTypeInput.selectedIndex]?.text || roomType;
+
+            filters.push(`Room: ${roomTypeText}`);
         }
 
         if (budget !== null && !Number.isNaN(budget)) {
-            const lowerBudget = Math.floor(budget / 1000) * 1000;
-            const upperBudget = lowerBudget + 900;
+            const lowerBudget =
+                Math.floor(budget / 1000) * 1000;
+
+            const upperBudget =
+                lowerBudget + 900;
 
             filters.push(
                 `Budget: ₱${lowerBudget.toLocaleString()} - ₱${upperBudget.toLocaleString()}`
@@ -192,53 +201,38 @@ function updateResultsCount(
     }
 }
 
-/* =========================
-   RESET FILTERS
-========================= */
+/* ===== RESET FILTERS ===== */
 
 function resetFilters() {
     const locationInput = document.getElementById("locationSearch");
     const roomTypeInput = document.getElementById("propertyType");
     const budgetInput = document.getElementById("budgetSearch");
 
-    if (locationInput) {
-        locationInput.value = "";
-    }
-
-    if (roomTypeInput) {
-        roomTypeInput.value = "";
-    }
-
-    if (budgetInput) {
-        budgetInput.value = "";
-    }
+    if (locationInput) locationInput.value = "";
+    if (roomTypeInput) roomTypeInput.value = "";
+    if (budgetInput) budgetInput.value = "";
 
     searchProperties();
 }
 
-/* =========================
-   ENTER KEY SEARCH
-========================= */
+/* ===== ENTER KEY SEARCH ===== */
 
 const searchInputs = [
     document.getElementById("locationSearch"),
     document.getElementById("budgetSearch")
 ];
 
-searchInputs.forEach(input => {
-    if (!input) return;
-
-    input.addEventListener("keydown", event => {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            searchProperties();
-        }
-    });
+searchInputs.forEach((input) => {
+    if (input) {
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                searchProperties();
+            }
+        });
+    }
 });
 
-/* =========================
-   FAVORITES
-========================= */
+/* ===== FAVORITES ===== */
 
 function getSavedFavorites() {
     return JSON.parse(
@@ -255,16 +249,18 @@ function saveFavorites(favorites) {
 
 function toggleFavorite(button, propertyName) {
     let favorites = getSavedFavorites();
+    const icon = button.querySelector("i");
 
     if (favorites.includes(propertyName)) {
-        favorites = favorites.filter(
-            name => name !== propertyName
-        );
-
-        button.textContent = "♡";
+        favorites = favorites.filter(name => name !== propertyName);
+        button.classList.remove("text-red-500");
+        icon.classList.remove("fa-solid");
+        icon.classList.add("fa-regular");
     } else {
         favorites.push(propertyName);
-        button.textContent = "♥";
+        button.classList.add("text-red-500");
+        icon.classList.remove("fa-regular");
+        icon.classList.add("fa-solid");
     }
 
     saveFavorites(favorites);
@@ -273,18 +269,96 @@ function toggleFavorite(button, propertyName) {
 function restoreFavorites() {
     const favorites = getSavedFavorites();
 
-    document.querySelectorAll(".favorite-button").forEach(button => {
+    document.querySelectorAll(".favorite-button").forEach((button) => {
         const propertyName = button.dataset.property;
+        const icon = button.querySelector("i");
 
         if (favorites.includes(propertyName)) {
-            button.textContent = "♥";
+            button.classList.add("text-red-500");
+            icon.classList.remove("fa-regular");
+            icon.classList.add("fa-solid");
         }
     });
 }
 
-/* =========================
-   VIEW PROPERTY
-========================= */
+function setActiveNav(activeButton) {
+    const buttons = [
+        document.getElementById("findHomeButton"),
+        document.getElementById("savedFavoritesButton")
+    ];
+
+    buttons.forEach((button) => {
+        if (!button) return;
+
+        button.classList.remove(
+            "text-[#c99400]",
+            "font-semibold",
+            "border-b-2",
+            "border-[#d89a00]"
+        );
+
+        button.classList.add("text-slate-600");
+    });
+
+    if (activeButton) {
+        activeButton.classList.remove("text-slate-600");
+        activeButton.classList.add(
+            "text-[#c99400]",
+            "font-semibold",
+            "border-b-2",
+            "border-[#d89a00]"
+        );
+    }
+}
+
+function showAllProperties() {
+    setActiveNav(document.getElementById("findHomeButton"));
+
+    document.querySelectorAll(".property-card").forEach((property) => {
+        property.style.display = "";
+    });
+
+    document.getElementById("noResults")?.classList.add("hidden");
+    document.getElementById("noFavorites")?.classList.add("hidden");
+
+    document.getElementById("properties")?.scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function showSavedFavorites() {
+    setActiveNav(document.getElementById("savedFavoritesButton"));
+
+    const favorites = getSavedFavorites();
+    const properties = document.querySelectorAll(".property-card");
+    let visibleCount = 0;
+
+    properties.forEach((property) => {
+        const propertyName =
+            property.querySelector(".favorite-button")?.dataset.property;
+
+        if (favorites.includes(propertyName)) {
+            property.style.display = "";
+            visibleCount++;
+        } else {
+            property.style.display = "none";
+        }
+    });
+
+    document.getElementById("noResults")?.classList.add("hidden");
+
+    const noFavorites = document.getElementById("noFavorites");
+
+    if (noFavorites) {
+        noFavorites.classList.toggle("hidden", visibleCount !== 0);
+    }
+
+    document.getElementById("properties")?.scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+/* ===== VIEW PROPERTY ===== */
 
 function viewProperty(propertyName) {
     alert(
@@ -292,32 +366,27 @@ function viewProperty(propertyName) {
     );
 }
 
-/* =========================
-   NOTIFICATIONS
-========================= */
-
-function handleNotifications() {
-    alert("Notifications will be available here later.");
-}
-
-/* =========================
-   HTML ONCLICK FUNCTIONS
-========================= */
+/* ===== MAKE FUNCTIONS AVAILABLE TO HTML ONCLICK ===== */
 
 window.showSlide = showSlide;
 window.nextSlide = nextSlide;
 window.previousSlide = previousSlide;
-
 window.searchProperties = searchProperties;
 window.resetFilters = resetFilters;
-
 window.toggleFavorite = toggleFavorite;
 window.viewProperty = viewProperty;
-window.handleNotifications = handleNotifications;
 
-/* =========================
-   START
-========================= */
+document.getElementById("findHomeButton")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    showAllProperties();
+});
+
+document.getElementById("savedFavoritesButton")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    showSavedFavorites();
+});
+
+/* ===== START ===== */
 
 restoreFavorites();
 
