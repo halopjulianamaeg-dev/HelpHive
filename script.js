@@ -5,13 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("loginForm");
 
     if (!loginForm) {
-        console.error("Login form not found.");
+        console.error("ERROR: loginForm was not found.");
         return;
     }
+
+    console.log("HelpHive login script loaded.");
 
     loginForm.addEventListener("submit", async (e) => {
 
         e.preventDefault();
+
+        console.log("LOGIN BUTTON CLICKED");
 
         const emailInput = document.getElementById("email");
         const passwordInput = document.getElementById("password");
@@ -22,10 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value;
 
-        // Clear old errors
+        // Clear previous errors
         emailError.textContent = "";
         passwordError.textContent = "";
-
 
         // =========================
         // VALIDATION
@@ -41,11 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-
         try {
 
+            console.log("Attempting Supabase login...");
+
             // =========================
-            // LOGIN WITH SUPABASE
+            // SUPABASE LOGIN
             // =========================
 
             const { data, error } =
@@ -54,41 +58,42 @@ document.addEventListener("DOMContentLoaded", () => {
                     password: password
                 });
 
+            // =========================
+            // LOGIN ERROR
+            // =========================
 
-            // Login failed
             if (error) {
 
                 console.error("Supabase login error:", error);
 
-                if (
-                    error.message
-                        .toLowerCase()
-                        .includes("invalid login credentials")
-                ) {
+                const errorText = error.message.toLowerCase();
+
+                if (errorText.includes("invalid login credentials")) {
+
                     passwordError.textContent =
                         "Incorrect email or password.";
-                }
 
-                else if (
-                    error.message
-                        .toLowerCase()
-                        .includes("email not confirmed")
-                ) {
+                } else if (errorText.includes("email not confirmed")) {
+
                     emailError.textContent =
                         "Please confirm your email before logging in.";
-                }
 
-                else {
-                    passwordError.textContent = error.message;
+                } else {
+
+                    passwordError.textContent =
+                        error.message;
                 }
 
                 return;
             }
 
+            // =========================
+            // LOGIN SUCCESS
+            // =========================
 
-            // =========================
-            // CHECK USER
-            // =========================
+            console.log("LOGIN SUCCESSFUL!");
+            console.log("User:", data.user);
+            console.log("Session:", data.session);
 
             if (!data.user) {
 
@@ -98,125 +103,70 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-
             const user = data.user;
 
-            console.log("LOGIN SUCCESSFUL");
             console.log("User ID:", user.id);
             console.log("Email:", user.email);
             console.log("User metadata:", user.user_metadata);
 
-
             // =========================
-            // GET ROLE FROM PROFILES
+            // GET ACCOUNT TYPE
             // =========================
 
-            let role = null;
+            let accountType =
+                user.user_metadata?.account_type;
 
-            const { data: profile, error: profileError } =
-                await supabase
-                    .from("profiles")
-                    .select("role")
-                    .eq("id", user.id)
-                    .maybeSingle();
+            console.log("Account type from metadata:", accountType);
 
-
-            if (profileError) {
-
-                console.error(
-                    "Profile lookup error:",
-                    profileError
-                );
+            if (accountType) {
+                accountType = accountType.toLowerCase().trim();
             }
 
+            // =========================
+            // STUDENT
+            // =========================
 
-            if (profile && profile.role) {
-
-                role = profile.role;
+            if (accountType === "student") {
 
                 console.log(
-                    "Role from profiles:",
-                    role
+                    "Student account detected."
                 );
 
-            } else {
+                window.location.href = "dashboard.html";
 
-                // =========================
-                // FALLBACK TO SIGNUP DATA
-                // =========================
-
-                role =
-                    user.user_metadata?.account_type;
-
-                console.log(
-                    "Role from user metadata:",
-                    role
-                );
+                return;
             }
 
-
             // =========================
-            // NORMALIZE ROLE
-            // =========================
-
-            if (role) {
-                role = role.toLowerCase().trim();
-            }
-
-
-            // =========================
-            // REDIRECT
+            // OWNER
             // =========================
 
-            if (role === "student") {
+            if (accountType === "owner") {
 
                 console.log(
-                    "Redirecting student to dashboard..."
-                );
-
-                window.location.href =
-                    "dashboard.html";
-
-            }
-
-            else if (role === "owner") {
-
-                console.log(
-                    "Redirecting owner to owner dashboard..."
+                    "Owner account detected."
                 );
 
                 window.location.href =
                     "owner-dashboard.html";
 
+                return;
             }
 
-            else if (role === "superadmin") {
+            // =========================
+            // UNKNOWN ACCOUNT TYPE
+            // =========================
 
-                console.log(
-                    "Redirecting superadmin..."
-                );
+            console.error(
+                "Account type not found or invalid:",
+                accountType
+            );
 
-                window.location.href =
-                    "superadmin-dashboard.html";
+            alert(
+                "Login successful, but your account type could not be identified."
+            );
 
-            }
-
-            else {
-
-                console.error(
-                    "Invalid or missing account type:",
-                    role
-                );
-
-                alert(
-                    "Your account type could not be identified. Please contact the administrator."
-                );
-
-            }
-
-        }
-
-        catch (error) {
+        } catch (error) {
 
             console.error(
                 "Unexpected login error:",
@@ -229,5 +179,48 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
+
+
+    // =========================
+    // SHOW / HIDE PASSWORD
+    // =========================
+
+    const togglePassword =
+        document.getElementById("togglePassword");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    if (togglePassword) {
+
+        togglePassword.addEventListener("click", () => {
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+
+                togglePassword.classList.remove(
+                    "fa-eye"
+                );
+
+                togglePassword.classList.add(
+                    "fa-eye-slash"
+                );
+
+            } else {
+
+                passwordInput.type = "password";
+
+                togglePassword.classList.remove(
+                    "fa-eye-slash"
+                );
+
+                togglePassword.classList.add(
+                    "fa-eye"
+                );
+            }
+
+        });
+    }
 
 });
