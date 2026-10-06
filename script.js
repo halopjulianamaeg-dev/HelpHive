@@ -114,9 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
             // =========================
             
             const accountType =
-                user.user_metadata?.account_type?.toLowerCase().trim();
+                String(user.user_metadata?.account_type || "")
+                    .trim()
+                    .toLowerCase();
             
+            console.log("=================================");
             console.log("FINAL ACCOUNT TYPE:", accountType);
+            console.log("=================================");
             
             // =========================
             // STUDENT
@@ -135,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // PROPERTY OWNER
             // =========================
             
-            if (accountType === "property_owner") {
+            else if (accountType === "property_owner") {
             
                 console.log("Property owner account detected.");
             
@@ -148,14 +152,19 @@ document.addEventListener("DOMContentLoaded", () => {
             // UNKNOWN ACCOUNT TYPE
             // =========================
             
-            console.error(
-                "Account type not found or invalid:",
-                accountType
-            );
+            else {
             
-            alert(
-                "Login successful, but your account type could not be identified."
-            );
+                console.error(
+                    "Account type not found or invalid:",
+                    accountType
+                );
+            
+                alert(
+                    "Login successful, but your account type could not be identified."
+                );
+            
+                return;
+            }
         } catch (error) {
 
             console.error(
