@@ -143,13 +143,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-        } catch (error) {
+     catch (error) {
+    console.error("Registration error:", error);
 
-            console.error("Registration error:", error);
-
-            showError(
-                "Unable to register. Please check your internet connection and try again."
-            );
+    showError(
+        error.message || "Registration failed. Please try again."
+    );
+}
 
         } finally {
 
