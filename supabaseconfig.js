@@ -6,6 +6,5 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_ANON_KEY
 );
 
-export const supabase = supabaseClient;
 
 console.log("SUPABASE CLIENT LOADED:", supabaseClient);
