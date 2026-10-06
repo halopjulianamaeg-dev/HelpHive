@@ -19,10 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const spinner = document.getElementById("spinner");
 
 
-    // =========================
-    // SHOW ERROR
-    // =========================
-
     function showError(message) {
         errorMessage.textContent = message;
         errorAlert.classList.remove("hidden");
@@ -30,20 +26,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // =========================
-    // SHOW SUCCESS
-    // =========================
-
     function showSuccess(message) {
         successMessage.textContent = message;
         successAlert.classList.remove("hidden");
         errorAlert.classList.add("hidden");
     }
 
-
-    // =========================
-    // SIGN UP
-    // =========================
 
     form.addEventListener("submit", async function (event) {
 
@@ -53,8 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
         errorAlert.classList.add("hidden");
 
 
-        // Get values
-
         const name = fullname.value.trim();
         const type = accountType.value;
         const userEmail = email.value.trim();
@@ -62,9 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const confirm = confirmPassword.value;
 
 
-        // =========================
         // VALIDATION
-        // =========================
 
         if (name === "") {
             showError("Please enter your full name.");
@@ -87,18 +71,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        // =========================
         // DISABLE BUTTON
-        // =========================
 
         submitBtn.disabled = true;
         btnText.textContent = "Creating Account...";
         spinner.classList.remove("hidden");
 
 
-        // =========================
-        // SUPABASE SIGN UP
-        // =========================
+        // SIGN UP
 
         try {
 
@@ -106,29 +86,24 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Attempting signup for:", userEmail);
 
 
-            const result = await supabaseClient.auth.signUp({
-                email: userEmail,
-                password: userPassword,
+            const { data, error } =
+                await supabaseClient.auth.signUp({
+                    email: userEmail,
+                    password: userPassword,
 
-                options: {
-                    data: {
-                        full_name: name,
-                        account_type: type
-                    },
+                    options: {
+                        data: {
+                            full_name: name,
+                            account_type: type
+                        },
 
-                    emailRedirectTo:
-                        "https://helphives.netlify.app/login"
-                }
-            });
-
-
-            const data = result.data;
-            const error = result.error;
+                        emailRedirectTo:
+                            "https://helphives.netlify.app/login"
+                    }
+                });
 
 
-            // =========================
             // SUPABASE ERROR
-            // =========================
 
             if (error) {
 
@@ -147,12 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     error.code
                 );
 
-                console.error(
-                    "STATUS:",
-                    error.status
-                );
-
-
                 showError(
                     error.message ||
                     "Registration failed."
@@ -162,9 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            // =========================
             // SUCCESS
-            // =========================
 
             console.log(
                 "REGISTRATION DATA:",
@@ -182,9 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            // =========================
-            // CONFIRMATION DISABLED
-            // =========================
+            // EMAIL CONFIRMATION OFF
 
             if (data.session) {
 
@@ -203,9 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            // =========================
-            // CONFIRMATION ENABLED
-            // =========================
+            // EMAIL CONFIRMATION ON
 
             else {
 
@@ -216,14 +179,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 form.reset();
             }
 
-        }
 
-
-        // =========================
-        // JAVASCRIPT ERROR
-        // =========================
-
-        catch (error) {
+        } catch (error) {
 
             console.error(
                 "REGISTRATION ERROR:",
@@ -235,25 +192,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 error.message
             );
 
-            console.error(
-                "ERROR STACK:",
-                error.stack
-            );
-
-
             showError(
                 error.message ||
                 "Registration failed. Please try again."
             );
 
-        }
 
-
-        // =========================
-        // ENABLE BUTTON
-        // =========================
-
-        finally {
+        } finally {
 
             submitBtn.disabled = false;
 
@@ -265,9 +210,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    // =========================
     // PASSWORD TOGGLE
-    // =========================
 
     const togglePassword =
         document.getElementById("toggle-password");
@@ -303,9 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // =========================
     // CONFIRM PASSWORD TOGGLE
-    // =========================
 
     const toggleConfirmPassword =
         document.getElementById(
@@ -325,8 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 if (
-                    confirmPassword.type ===
-                    "password"
+                    confirmPassword.type === "password"
                 ) {
 
                     confirmPassword.type = "text";
