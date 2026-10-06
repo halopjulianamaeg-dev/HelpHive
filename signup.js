@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // IMPORTANT:
                     // This must be inside options
                     emailRedirectTo:
-                        "https://helphive.netlify.app/pages/login.html"
+                        "http://127.0.0.1:5500/pages/login.html"
                 }
             });
 
