@@ -112,60 +112,50 @@ document.addEventListener("DOMContentLoaded", () => {
             // =========================
             // GET ACCOUNT TYPE
             // =========================
-
-            let accountType =
-                user.user_metadata?.account_type;
-
-            console.log("Account type from metadata:", accountType);
-
-            if (accountType) {
-                accountType = accountType.toLowerCase().trim();
-            }
-
+            
+            const accountType =
+                user.user_metadata?.account_type?.toLowerCase().trim();
+            
+            console.log("FINAL ACCOUNT TYPE:", accountType);
+            
             // =========================
             // STUDENT
             // =========================
-
+            
             if (accountType === "student") {
-
-                console.log(
-                    "Student account detected."
-                );
-
+            
+                console.log("Student account detected.");
+            
                 window.location.href = "dashboard.html";
-
+            
                 return;
             }
-
+            
             // =========================
-            // OWNER
+            // PROPERTY OWNER
             // =========================
-
+            
             if (accountType === "property_owner") {
-
-                console.log(
-                    "Property owner account detected."
-                );
             
-                window.location.href =
-                    "owner-dashboard.html";
+                console.log("Property owner account detected.");
+            
+                window.location.href = "owner-dashboard.html";
             
                 return;
             }
-
+            
             // =========================
             // UNKNOWN ACCOUNT TYPE
             // =========================
-
+            
             console.error(
                 "Account type not found or invalid:",
                 accountType
             );
-
+            
             alert(
                 "Login successful, but your account type could not be identified."
             );
-
         } catch (error) {
 
             console.error(
