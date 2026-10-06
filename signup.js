@@ -78,35 +78,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const { data, error } = await supabaseClient.auth.signUp({
+            console.log("SIGNUP BUTTON WORKED");
+console.log("Attempting signup for:", userEmail);
 
-                email: userEmail,
-
-                password: userPassword,
-
-                options: {
-
-                    data: {
-                        full_name: name,
-                        account_type: type
-                    },
-
-                    // IMPORTANT:
-                    // This must be inside options
-                    emailRedirectTo:
-                        "http://127.0.0.1:5500/pages/login.html"
-                }
-            });
+const { data, error } = await supabaseClient.auth.signUp({
+    email: userEmail,
+    password: userPassword,
+    options: {
+        data: {
+            full_name: name,
+            account_type: type
+        },
+        emailRedirectTo: "https://helphives.netlify.app/login"
+    }
+});
 
 
             if (error) {
+    console.error("SUPABASE SIGNUP ERROR:", error);
+    console.error("MESSAGE:", error.message);
+    console.error("CODE:", error.code);
+    console.error("STATUS:", error.status);
 
-                console.error("Supabase error:", error);
-
-                showError(error.message);
-
-                return;
-            }
+    showError(error.message || "Registration failed.");
+    return;
+}
 
 
             console.log("REGISTRATION DATA:", data);
@@ -143,12 +139,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-     catch (error) {
-    console.error("Registration error:", error);
+    } catch (error) {
+    console.error("REGISTRATION ERROR:", error);
+    console.error("ERROR MESSAGE:", error.message);
+    console.error("ERROR STACK:", error.stack);
 
-    showError(
-        error.message || "Registration failed. Please try again."
-    );
+    showError(error.message || "Registration failed. Please try again.");
 }
 
         } finally {
