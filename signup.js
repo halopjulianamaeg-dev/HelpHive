@@ -1,8 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    // ==============================
-    // GET HTML ELEMENTS
-    // ==============================
+document.addEventListener("DOMContentLoaded", function () {
 
     const form = document.getElementById("signup-form");
 
@@ -23,148 +19,116 @@ document.addEventListener("DOMContentLoaded", () => {
     const spinner = document.getElementById("spinner");
 
 
-    // ==============================
-    // SHOW ERROR MESSAGE
-    // ==============================
+    // =========================
+    // SHOW ERROR
+    // =========================
 
     function showError(message) {
-
         errorMessage.textContent = message;
-
         errorAlert.classList.remove("hidden");
-
         successAlert.classList.add("hidden");
     }
 
 
-    // ==============================
-    // SHOW SUCCESS MESSAGE
-    // ==============================
+    // =========================
+    // SHOW SUCCESS
+    // =========================
 
     function showSuccess(message) {
-
         successMessage.textContent = message;
-
         successAlert.classList.remove("hidden");
-
         errorAlert.classList.add("hidden");
     }
 
 
-    // ==============================
+    // =========================
     // SIGN UP
-    // ==============================
+    // =========================
 
-    form.addEventListener("submit", async (event) => {
+    form.addEventListener("submit", async function (event) {
 
         event.preventDefault();
 
-        // Hide previous messages
         successAlert.classList.add("hidden");
         errorAlert.classList.add("hidden");
 
 
-        // ==============================
-        // GET FORM VALUES
-        // ==============================
+        // Get values
 
         const name = fullname.value.trim();
-
         const type = accountType.value;
-
         const userEmail = email.value.trim();
-
         const userPassword = password.value;
-
         const confirm = confirmPassword.value;
 
 
-        // ==============================
+        // =========================
         // VALIDATION
-        // ==============================
+        // =========================
 
         if (name === "") {
-
             showError("Please enter your full name.");
-
             return;
         }
-
 
         if (userEmail === "") {
-
             showError("Please enter your email address.");
-
             return;
         }
-
 
         if (userPassword.length < 6) {
-
             showError("Password must be at least 6 characters.");
-
             return;
         }
-
 
         if (userPassword !== confirm) {
-
             showError("Passwords do not match.");
-
             return;
         }
 
 
-        // ==============================
+        // =========================
         // DISABLE BUTTON
-        // ==============================
+        // =========================
 
         submitBtn.disabled = true;
-
         btnText.textContent = "Creating Account...";
-
         spinner.classList.remove("hidden");
 
 
-        // ==============================
+        // =========================
         // SUPABASE SIGN UP
-        // ==============================
+        // =========================
 
         try {
 
             console.log("SIGNUP BUTTON WORKED");
-
             console.log("Attempting signup for:", userEmail);
 
 
-            const { data, error } =
-                await supabaseClient.auth.signUp({
+            const result = await supabaseClient.auth.signUp({
+                email: userEmail,
+                password: userPassword,
 
-                    email: userEmail,
+                options: {
+                    data: {
+                        full_name: name,
+                        account_type: type
+                    },
 
-                    password: userPassword,
-
-                    options: {
-
-                        data: {
-
-                            full_name: name,
-
-                            account_type: type
-
-                        },
-
-                        emailRedirectTo:
-                            "https://helphives.netlify.app/login"
-
-                    }
-
-                });
+                    emailRedirectTo:
+                        "https://helphives.netlify.app/login"
+                }
+            });
 
 
-            // ==============================
-            // CHECK FOR SUPABASE ERROR
-            // ==============================
+            const data = result.data;
+            const error = result.error;
+
+
+            // =========================
+            // SUPABASE ERROR
+            // =========================
 
             if (error) {
 
@@ -198,9 +162,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-            // ==============================
-            // SUCCESS DATA
-            // ==============================
+            // =========================
+            // SUCCESS
+            // =========================
 
             console.log(
                 "REGISTRATION DATA:",
@@ -217,15 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 data.session
             );
 
-            console.log(
-                "USER ID:",
-                data.user?.id
-            );
 
-
-            // ==============================
-            // EMAIL CONFIRMATION DISABLED
-            // ==============================
+            // =========================
+            // CONFIRMATION DISABLED
+            // =========================
 
             if (data.session) {
 
@@ -234,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                setTimeout(() => {
+                setTimeout(function () {
 
                     window.location.href =
                         "../index.html";
@@ -244,9 +203,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
-            // ==============================
-            // EMAIL CONFIRMATION ENABLED
-            // ==============================
+            // =========================
+            // CONFIRMATION ENABLED
+            // =========================
 
             else {
 
@@ -254,18 +213,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Registration successful! Please check your email to verify your account."
                 );
 
-
                 form.reset();
-
             }
-
 
         }
 
 
-        // ==============================
-        // JAVASCRIPT / NETWORK ERROR
-        // ==============================
+        // =========================
+        // JAVASCRIPT ERROR
+        // =========================
 
         catch (error) {
 
@@ -293,9 +249,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        // ==============================
-        // ENABLE BUTTON AGAIN
-        // ==============================
+        // =========================
+        // ENABLE BUTTON
+        // =========================
 
         finally {
 
@@ -304,81 +260,94 @@ document.addEventListener("DOMContentLoaded", () => {
             btnText.textContent = "Sign Up";
 
             spinner.classList.add("hidden");
-
         }
 
     });
 
 
-    // ==============================
-    // TOGGLE PASSWORD
-    // ==============================
+    // =========================
+    // PASSWORD TOGGLE
+    // =========================
 
-    document
-        .getElementById("toggle-password")
-        .addEventListener("click", () => {
+    const togglePassword =
+        document.getElementById("toggle-password");
 
-            const icon =
-                document.getElementById("eye-icon");
+    if (togglePassword) {
 
+        togglePassword.addEventListener(
+            "click",
+            function () {
 
-            if (password.type === "password") {
-
-                password.type = "text";
-
-                icon.classList.remove("fa-eye");
-
-                icon.classList.add("fa-eye-slash");
-
-            }
-
-            else {
-
-                password.type = "password";
-
-                icon.classList.remove("fa-eye-slash");
-
-                icon.classList.add("fa-eye");
-
-            }
-
-        });
+                const icon =
+                    document.getElementById("eye-icon");
 
 
-    // ==============================
-    // TOGGLE CONFIRM PASSWORD
-    // ==============================
+                if (password.type === "password") {
 
-    document
-        .getElementById("toggle-confirm-password")
-        .addEventListener("click", () => {
+                    password.type = "text";
 
-            const icon =
-                document.getElementById(
-                    "confirm-eye-icon"
-                );
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
 
+                } else {
 
-            if (confirmPassword.type === "password") {
+                    password.type = "password";
 
-                confirmPassword.type = "text";
-
-                icon.classList.remove("fa-eye");
-
-                icon.classList.add("fa-eye-slash");
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
 
             }
+        );
 
-            else {
+    }
 
-                confirmPassword.type = "password";
 
-                icon.classList.remove("fa-eye-slash");
+    // =========================
+    // CONFIRM PASSWORD TOGGLE
+    // =========================
 
-                icon.classList.add("fa-eye");
+    const toggleConfirmPassword =
+        document.getElementById(
+            "toggle-confirm-password"
+        );
+
+    if (toggleConfirmPassword) {
+
+        toggleConfirmPassword.addEventListener(
+            "click",
+            function () {
+
+                const icon =
+                    document.getElementById(
+                        "confirm-eye-icon"
+                    );
+
+
+                if (
+                    confirmPassword.type ===
+                    "password"
+                ) {
+
+                    confirmPassword.type = "text";
+
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+
+                } else {
+
+                    confirmPassword.type = "password";
+
+                    icon.classList.remove(
+                        "fa-eye-slash"
+                    );
+
+                    icon.classList.add("fa-eye");
+                }
 
             }
+        );
 
-        });
+    }
 
 });
