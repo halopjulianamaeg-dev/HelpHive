@@ -141,9 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
             
             else if (accountType === "property_owner") {
 
-                console.log("🔥🔥🔥 NEW PROPERTY OWNER CODE IS RUNNING 🔥🔥🔥");
+                console.log("Property owner account detected.");
             
-                alert("PROPERTY OWNER DETECTED!");
+                window.location.href = "owner-dashboard.html";
             
                 return;
             }
