@@ -141,15 +141,15 @@ document.addEventListener("DOMContentLoaded", () => {
             // OWNER
             // =========================
 
-            if (accountType === "owner") {
+            if (accountType === "property_owner") {
 
                 console.log(
-                    "Owner account detected."
+                    "Property owner account detected."
                 );
-
+            
                 window.location.href =
                     "owner-dashboard.html";
-
+            
                 return;
             }
 
