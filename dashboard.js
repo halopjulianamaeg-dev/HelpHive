@@ -386,6 +386,35 @@ document.getElementById("savedFavoritesButton")?.addEventListener("click", (even
     showSavedFavorites();
 });
 
+// Successfully Rented Properties carousel
+const rentedTrack = document.getElementById("rentedPropertiesTrack");
+const rentedPrevBtn = document.getElementById("rentedPrevBtn");
+const rentedNextBtn = document.getElementById("rentedNextBtn");
+
+if (rentedTrack && rentedPrevBtn && rentedNextBtn) {
+    const scrollRentedProperties = (direction) => {
+        const firstCard = rentedTrack.querySelector(":scope > div");
+
+        if (!firstCard) return;
+
+        const cardWidth = firstCard.getBoundingClientRect().width;
+        const gap = parseFloat(getComputedStyle(rentedTrack).columnGap) || 0;
+
+        rentedTrack.scrollBy({
+            left: direction * (cardWidth + gap),
+            behavior: "smooth"
+        });
+    };
+
+    rentedPrevBtn.addEventListener("click", () => {
+        scrollRentedProperties(-1);
+    });
+
+    rentedNextBtn.addEventListener("click", () => {
+        scrollRentedProperties(1);
+    });
+}
+
 /* ===== START ===== */
 
 restoreFavorites();

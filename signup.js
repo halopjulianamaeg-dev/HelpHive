@@ -1,3 +1,4 @@
+import { supabase } from "./supabaseconfig.js";
 document.addEventListener("DOMContentLoaded", function () {
 
     const form = document.getElementById("signup-form");
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             const { data, error } =
-                await supabaseClient.auth.signUp({
+                await supabase.auth.signUp({
                     email: userEmail,
                     password: userPassword,
 
