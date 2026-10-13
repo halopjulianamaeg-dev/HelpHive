@@ -1,101 +1,156 @@
 
 document.addEventListener("DOMContentLoaded", () => {
+    const supabase = window.supabaseClient;
     const form = document.getElementById("property-form");
     const message = document.getElementById("property-message");
 
-    if (!form || !message) return;
+    if (!supabase || !form || !message) {
+        console.error(
+            "Supabase client, property form, or message element is missing."
+        );
+        return;
+    }
 
-    form.addEventListener("submit", (event) => {
+    function showMessage(text, type = "error") {
+        message.textContent = text;
+        message.className =
+            "text-sm font-medium " +
+            (type === "success"
+                ? "text-green-600"
+                : "text-red-500");
+    }
+
+    form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-       
-const property = {
-    id: crypto.randomUUID(),
+        const submitButton = form.querySelector(
+            'button[type="submit"]'
+        );
 
-    propertyName: document.getElementById("propertyName").value.trim(),
-    propertyType: document.getElementById("propertyType").value,
-    propertyAddress: document.getElementById("propertyAddress").value.trim(),
-    propertyDescription: document.getElementById("propertyDescription").value.trim(),
-
-    // Room Details
-    availableRooms: Number(
-    document.getElementById("availableRooms").value
-    ),
-    roomType: document.getElementById("roomType").value,
-
-    // Rental Pricing
-    monthlyRent: Number(document.getElementById("monthlyRent").value),
-    electricityCharge: document.getElementById("electricityCharge").value,
-    waterCharge: document.getElementById("waterCharge").value,
-
-    // Selected Amenities
-    amenities: Array.from(
-        document.querySelectorAll('input[name="amenities"]:checked')
-    ).map(checkbox => checkbox.value),
-
-    createdAt: new Date().toISOString()
-};
-
-
-    if (
-    !property.propertyName ||
-    !property.propertyType ||
-    !property.propertyAddress ||
-    property.propertyDescription.length < 10 ||
-    document.getElementById("monthlyRent").value === "" ||
-    property.monthlyRent < 0 ||
-    !property.electricityCharge ||
-    !property.waterCharge
-) {
-    message.textContent = "Please complete all required fields correctly.";
-    message.className = "text-sm font-medium text-red-500";
-    return;
-}
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
 
         try {
-            const savedProperties = JSON.parse(
-                localStorage.getItem("helpHiveProperties") || "[]"
+            // Confirm the user is signed in.
+            const {
+                data: { user },
+                error: authError
+            } = await supabase.auth.getUser();
+
+            if (authError || !user) {
+                showMessage(
+                    "Please log in before saving a property."
+                );
+                return;
+            }
+
+            // Read the existing Add Property form fields.
+            const propertyName =
+                document.getElementById("propertyName").value.trim();
+
+            const propertyType =
+                document.getElementById("propertyType").value;
+
+            const propertyAddress =
+                document.getElementById("propertyAddress").value.trim();
+
+            const propertyDescription =
+                document.getElementById("propertyDescription").value.trim();
+
+            const availableRooms =
+                Number(document.getElementById("availableRooms").value);
+
+            const roomType =
+                document.getElementById("roomType").value;
+
+            const rentInput =
+                document.getElementById("monthlyRent").value;
+
+            const monthlyRent = Number(rentInput);
+
+            const electricityCharge =
+                document.getElementById("electricityCharge").value;
+
+            const waterCharge =
+                document.getElementById("waterCharge").value;
+
+            const amenities = Array.from(
+                document.querySelectorAll(
+                    'input[name="amenities"]:checked'
+                )
+            ).map((checkbox) => checkbox.value);
+
+            // Validate the required fields.
+            if (
+                !propertyName ||
+                !propertyType ||
+                !propertyAddress ||
+                propertyDescription.length < 10 ||
+                !roomType ||
+                !Number.isInteger(availableRooms) ||
+                availableRooms < 1 ||
+                rentInput === "" ||
+                !Number.isFinite(monthlyRent) ||
+                monthlyRent < 0 ||
+                !electricityCharge ||
+                !waterCharge
+            ) {
+                showMessage(
+                    "Please complete all required fields correctly."
+                );
+                return;
+            }
+
+            // Match the column names in public.properties.
+            const propertyRecord = {
+                owner_id: user.id,
+                property_name: propertyName,
+                property_type: propertyType,
+                full_address: propertyAddress,
+                description: propertyDescription,
+                available_rooms: availableRooms,
+                room_type: roomType,
+                monthly_rent: monthlyRent,
+                electricity_charges: electricityCharge,
+                water_charges: waterCharge,
+                amenities: amenities,
+                status: "available"
+            };
+
+            // Save permanently to Supabase.
+            const { data, error } = await supabase
+                .from("properties")
+                .insert(propertyRecord)
+                .select()
+                .single();
+
+            if (error) {
+                console.error("Supabase save error:", error);
+                showMessage(
+                    "Unable to save the property: " + error.message
+                );
+                return;
+            }
+
+            console.log("Property saved:", data);
+
+            showMessage(
+                "Property saved successfully!",
+                "success"
             );
-
-            savedProperties.push(property);
-
-            localStorage.setItem(
-                "helpHiveProperties",
-                JSON.stringify(savedProperties)
-            );
-
-            message.textContent = "Property information saved successfully!";
-            message.className = "text-sm font-medium text-green-600";
 
             form.reset();
+
         } catch (error) {
-            message.textContent = "Unable to save the property. Please try again.";
-            message.className = "text-sm font-medium text-red-500";
+            console.error("Unexpected property error:", error);
+            showMessage(
+                "Something went wrong. Please try again."
+            );
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
         }
     });
 });
-
-    // Dark mode
-    window.toggleDarkMode = () => {
-        const isDark = document.documentElement.classList.toggle("dark");
-
-        document.documentElement.classList.toggle("light", !isDark);
-
-        try {
-            localStorage.setItem("helpHiveDarkMode", isDark ? "dark" : "light");
-        } catch (error) {
-            console.warn("Could not save theme preference.", error);
-        }
-    };
-
-    // Notifications dropdown
-    window.toggleNotifications = () => {
-        document.getElementById("notificationDropdown")
-            ?.classList.toggle("hidden");
-    };
-
-    // Sign-in profile dropdown
-    window.toggleProfileDropdown = () => {
-        document.getElementById("profileDropdown")
-            ?.classList.toggle("hidden");
-    };
