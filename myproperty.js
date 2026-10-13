@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
     "use strict";
 
@@ -16,10 +15,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const viewContent = document.getElementById("hh-view-content");
     const editFields = document.getElementById("hh-edit-fields");
     const saveButton = document.getElementById("hh-save");
+    
+    // File inputs for images
+    const imageInput = document.getElementById("hh-image");
+    const imageInput2 = document.getElementById("hh-image-2");
+    const imageInput3 = document.getElementById("hh-image-3");
 
     let currentId = null;
     let modalMode = "add";
     const slideIndexes = {};
+    let activeUploadedImages = []; // Stores the data URLs for multi-image slideshow
 
     // Escape text before inserting user-entered data into HTML.
     function escapeHTML(value = "") {
@@ -38,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Demo properties are added only the first time this script runs.
-    // Change these sample details to your own property information.
     function getInitialListings() {
         return [
             {
@@ -52,12 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 bath: "1 bathroom",
                 owner: "Maria Santos",
                 ownerImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnRnIUfp9yF1zsn3DtXFTMJ8c4imYn-QY14oI-aR4Sqg&s=10",
-                images: [
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnRnIUfp9yF1zsn3DtXFTMJ8c4imYn-QY14oI-aR4Sqg&s=10",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3nyBSwOT5jEJNNdsd-RDii_rg2FwCIRJQEtcPON4pyA&s=10",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_iIH5ehB9lDWV-6iI8pFXBveCT9KdxuvZ3JwuED51KQ&s=10"
-                ],
+                image: "dorm1.jpg",
+                images: ["dorm1.jpg", "dorm2.jpg", "bh3.jpg"],
                 status: "verified"
             },
             {
@@ -69,9 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 room: "Private Room",
                 wifi: "AC Available",
                 bath: "5 bathrooms",
-                owner: "Juan Dela Cruz",
+                owner: "Maria Santos",
                 image: "bh2.jpg",
-                images: ["bh2.jpg", "dorm2.jpg", "dorm3.jpg"],
+                images: ["bh2.jpg", "dorm2.jpg"],
                 status: "verified"
             },
             {
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 room: "Student Bed",
                 wifi: "Utilities Included",
                 bath: "1 bathroom",
-                owner: "Mark Anthony",
+                owner: "Maria Santos",
                 image: "bh3.jpg",
                 images: ["bh3.jpg", "dorm3.jpg", "dorm1.jpg"],
                 status: "featured"
@@ -128,14 +128,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getImages(property) {
-        const images = Array.isArray(property.images)
-            ? property.images.filter(Boolean)
-            : [];
-
-        if (images.length) return images;
-        if (property.image) return [property.image];
-        return ["bh2.jpg"];
+        let images = [];
+        if (Array.isArray(property.images) && property.images.length > 0) {
+            images = property.images.filter(Boolean);
+        } else if (property.image) {
+            images = [property.image];
+        }
+        return images.length > 0 ? images : ["bh2.jpg"];
     }
+
+    // Handle file selections from all 3 inputs for multi-image slideshow
+    function handleImageInputs() {
+        const inputs = [imageInput, imageInput2, imageInput3].filter(Boolean);
+        if (inputs.length === 0) return;
+
+        let previewBox = document.getElementById("hh-dynamic-previews");
+        if (!previewBox) {
+            previewBox = document.createElement("div");
+            previewBox.id = "hh-dynamic-previews";
+            previewBox.className = "flex flex-wrap gap-2 mt-3";
+            imageInput.parentNode.appendChild(previewBox);
+        }
+        previewBox.innerHTML = "";
+
+        activeUploadedImages = [];
+
+        inputs.forEach((input, index) => {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    activeUploadedImages[index] = e.target.result;
+                    
+                    // Re-render previews box
+                    previewBox.innerHTML = "";
+                    activeUploadedImages.filter(Boolean).forEach(imgSrc => {
+                        const thumbImg = document.createElement("img");
+                        thumbImg.src = imgSrc;
+                        thumbImg.className = "w-16 h-16 object-cover rounded-lg border border-slate-300 shadow-xs";
+                        previewBox.appendChild(thumbImg);
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    [imageInput, imageInput2, imageInput3].forEach(input => {
+        input?.addEventListener("change", handleImageInputs);
+    });
 
     function renderListings() {
         if (!grid) return;
@@ -165,17 +206,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         grid.innerHTML = filtered.map(property => {
             const images = getImages(property);
-            const firstImage = escapeHTML(images[0]);
-            const status = property.status === "featured"
-                ? "Featured"
-                : "Verified";
+            const status = property.status === "featured" ? "Featured" : "Verified";
+            const currentIdx = slideIndexes[property.id] || 0;
 
             const imageSlides = images.map((image, index) => `
                 <img
                     src="${escapeHTML(image)}"
                     alt="${escapeHTML(property.name)} photo ${index + 1}"
-                    class="w-full h-full flex-shrink-0 object-cover"
-                    style="width:${100 / images.length}%"
+                    class="w-full h-full absolute inset-0 object-cover transition-opacity duration-500 ${index === currentIdx ? 'opacity-100 z-0' : 'opacity-0 z-0'}"
                     onerror="this.style.display='none'">
             `).join("");
 
@@ -185,10 +223,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     overflow-hidden shadow-sm hover:shadow-xl
                     transition flex flex-col">
 
-                    <div class="h-56 relative overflow-hidden bg-slate-200 dark:bg-slate-700">
-                        <div id="slides-${escapeHTML(property.id)}"
-                            class="flex h-full transition-transform duration-300 ease-out"
-                            style="width:${images.length * 100}%; transform:translateX(0)">
+                    <div class="h-56 relative overflow-hidden bg-slate-900 group">
+                        <div id="slides-${escapeHTML(property.id)}" class="relative w-full h-full">
                             ${imageSlides}
                         </div>
 
@@ -197,8 +233,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 onclick="moveListingSlide('${escapeHTML(property.id)}', -1)"
                                 aria-label="Previous image"
                                 class="absolute left-3 top-1/2 -translate-y-1/2
-                                w-9 h-9 rounded-full bg-black/50 text-white
-                                hover:bg-black/75">
+                                w-9 h-9 rounded-full bg-black/60 text-white
+                                hover:bg-black/85 cursor-pointer z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <i class="fa-solid fa-chevron-left"></i>
                             </button>
 
@@ -206,15 +242,22 @@ document.addEventListener("DOMContentLoaded", () => {
                                 onclick="moveListingSlide('${escapeHTML(property.id)}', 1)"
                                 aria-label="Next image"
                                 class="absolute right-3 top-1/2 -translate-y-1/2
-                                w-9 h-9 rounded-full bg-black/50 text-white
-                                hover:bg-black/75">
+                                w-9 h-9 rounded-full bg-black/60 text-white
+                                hover:bg-black/85 cursor-pointer z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </button>
+
+                            <!-- Dots Indicator -->
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+                                ${images.map((_, dotIdx) => `
+                                    <span class="h-1.5 rounded-full transition-all ${dotIdx === currentIdx ? 'bg-white w-4' : 'bg-white/50 w-1.5'}" data-dot-for="${escapeHTML(property.id)}-${dotIdx}"></span>
+                                `).join('')}
+                            </div>
                         ` : ""}
 
                         <span class="absolute top-3 left-3 rounded-full
                             bg-white/95 text-slate-800 px-3 py-1
-                            text-xs font-bold shadow">
+                            text-xs font-bold shadow z-20">
                             ${status}
                         </span>
                     </div>
@@ -239,40 +282,41 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span class="text-xs font-medium text-slate-400">/ month</span>
                         </p>
 
-                    <div class="flex flex-wrap gap-2 mt-4 text-xs">
-                        <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
-                            <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
-                            ${escapeHTML(property.room)}
-                        </span>
+                        <div class="flex flex-wrap gap-2 mt-4 text-xs">
+                            <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
+                                <i class="fa-solid fa-bed text-[#d89a00] mr-1"></i>
+                                ${escapeHTML(property.room)}
+                            </span>
 
-                        <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
-                            <i class="fa-solid fa-wifi text-[#d89a00] mr-1"></i>
-                            ${escapeHTML(property.wifi)}
-                        </span>
+                            <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
+                                <i class="fa-solid fa-wifi text-[#d89a00] mr-1"></i>
+                                ${escapeHTML(property.wifi)}
+                            </span>
 
-                        <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
-                            <i class="fa-solid fa-bath text-[#d89a00] mr-1"></i>
-                            ${escapeHTML(property.bathrooms || "1 bath")}
-                        </span>
+                            <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
+                                <i class="fa-solid fa-bath text-[#d89a00] mr-1"></i>
+                                ${escapeHTML(property.bath || "1 bathroom")}
+                            </span>
 
-                        <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
-                            <i class="fa-solid fa-ruler-combined text-[#d89a00] mr-1"></i>
-                            ${escapeHTML(property.area)} sqm
-                        </span>
+                            <span class="rounded-full bg-amber-50 dark:bg-slate-700 px-3 py-2">
+                                <i class="fa-solid fa-ruler-combined text-[#d89a00] mr-1"></i>
+                                ${escapeHTML(property.area)} sqm
+                            </span>
+                        </div>
                     </div>
 
                     <div class="px-5 pt-3 pb-5 flex gap-3 mt-2">
                         <button type="button"
                             onclick="viewProperty('${escapeHTML(property.id)}')"
                             class="flex-1 rounded-xl bg-amber-50 hover:bg-amber-100
-                            text-amber-800 py-3 text-sm font-semibold">
+                            text-amber-800 py-3 text-sm font-semibold cursor-pointer">
                             <i class="fa-solid fa-eye mr-1"></i> View
                         </button>
 
                         <button type="button"
                             onclick="editProperty('${escapeHTML(property.id)}')"
                             class="flex-1 rounded-xl bg-[#d89a00] hover:bg-[#bd8500]
-                            text-white py-3 text-sm font-semibold">
+                            text-white py-3 text-sm font-semibold cursor-pointer">
                             <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
                         </button>
                     </div>
@@ -300,8 +344,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <button type="button"
                             onclick="deleteProperty('${escapeHTML(property.id)}')"
-                            class="text-sm text-rose-600 hover:text-rose-800 font-semibold">
-                            <i class="fa-solid fa-trash mr-1"></i> Delete
+                            class="text-sm text-rose-600 hover:text-rose-800 font-semibold cursor-pointer flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> Delete
                         </button>
                     </div>
                 </article>
@@ -312,9 +356,10 @@ document.addEventListener("DOMContentLoaded", () => {
             emptyState.classList.toggle("hidden", filtered.length !== 0);
         }
 
-        // Reset carousel positions after cards are rendered.
         filtered.forEach(property => {
-            slideIndexes[property.id] = 0;
+            if (slideIndexes[property.id] === undefined) {
+                slideIndexes[property.id] = 0;
+            }
         });
     }
 
@@ -324,64 +369,44 @@ document.addEventListener("DOMContentLoaded", () => {
         modalMode = mode;
         currentId = property?.id || null;
         form.reset();
+        activeUploadedImages = [];
+        const previewBox = document.getElementById("hh-dynamic-previews");
+        if (previewBox) previewBox.innerHTML = "";
 
         modal.classList.remove("hidden");
         modal.classList.add("flex");
 
-        const isView = mode === "view";
         const isAdd = mode === "add";
 
-        editFields?.classList.toggle("hidden", isView);
-        viewContent?.classList.toggle("hidden", !isView);
-        saveButton?.classList.toggle("hidden", isView);
+        editFields?.classList.remove("hidden");
+        viewContent?.classList.add("hidden");
+        saveButton?.classList.remove("hidden");
 
         if (modalTitle) {
-            modalTitle.textContent = isAdd
-                ? "Add New Listing"
-                : isView
-                    ? "Property Details"
-                    : "Edit Listing";
+            modalTitle.textContent = isAdd ? "Add New Listing" : "Edit Listing";
         }
 
-        if (isView && property) {
-            viewContent.innerHTML = `
-                <div class="space-y-3 text-sm text-slate-700 dark:text-slate-200">
-                    <h4 class="text-xl font-bold">${escapeHTML(property.name)}</h4>
-                    <p><strong>Property ID:</strong> ${escapeHTML(property.id)}</p>
-                    <p><strong>Location:</strong> ${escapeHTML(property.location)}</p>
-                    <p><strong>Monthly Price:</strong> ₱${formatPrice(property.price)}</p>
-                    <p><strong>Area:</strong> ${escapeHTML(property.area)} sqm</p>
-                    <p><strong>Room Type:</strong> ${escapeHTML(property.room)}</p>
-                    <p><strong>Wi-Fi / Utilities:</strong> ${escapeHTML(property.wifi)}</p>
-                    <p><strong>Bathroom:</strong> ${escapeHTML(property.bath)}</p>
-                    <p><strong>Owner:</strong> ${escapeHTML(property.owner)}</p>
-                    <p><strong>Status:</strong> ${escapeHTML(property.status)}</p>
-                    ${property.image ? `
-                        <img src="${escapeHTML(property.image)}"
-                            alt="Property photo"
-                            class="w-full h-48 object-cover rounded-xl mt-4"
-                            onerror="this.style.display='none'">
-                    ` : ""}
-                </div>
-            `;
-        } else {
-            viewContent.innerHTML = "";
+        if (property) {
+            document.getElementById("hh-name").value = property.name || "";
+            document.getElementById("hh-location").value = property.location || "";
+            document.getElementById("hh-price").value = property.price || "";
+            document.getElementById("hh-area").value = property.area || "";
+            document.getElementById("hh-room").value = property.room || "";
+            document.getElementById("hh-wifi").value = property.wifi || "";
+            document.getElementById("hh-bath").value = property.bath || "";
+            document.getElementById("hh-owner").value = property.owner || "";
+            document.getElementById("hh-status").value = property.status || "featured";
 
-            if (property) {
-                document.getElementById("hh-name").value = property.name || "";
-                document.getElementById("hh-location").value = property.location || "";
-                document.getElementById("hh-price").value = property.price || "";
-                document.getElementById("hh-area").value = property.area || "";
-                document.getElementById("hh-room").value = property.room || "";
-                document.getElementById("hh-wifi").value = property.wifi || "";
-                document.getElementById("hh-bath").value = property.bath || "";
-                document.getElementById("hh-owner").value = property.owner || "";
-                document.getElementById("hh-image").value =
-                    /^https?:\/\//i.test(property.image || "")
-                        ? property.image
-                        : "";
-                document.getElementById("hh-status").value =
-                    property.status || "featured";
+            if (property.images && property.images.length > 0) {
+                activeUploadedImages = [...property.images];
+                if (previewBox) {
+                    property.images.forEach(imgSrc => {
+                        const thumbImg = document.createElement("img");
+                        thumbImg.src = imgSrc;
+                        thumbImg.className = "w-16 h-16 object-cover rounded-lg border border-slate-300 shadow-xs";
+                        previewBox.appendChild(thumbImg);
+                    });
+                }
             }
         }
     }
@@ -391,14 +416,16 @@ document.addEventListener("DOMContentLoaded", () => {
         modal?.classList.remove("flex");
         form?.reset();
         currentId = null;
+        activeUploadedImages = [];
+        const previewBox = document.getElementById("hh-dynamic-previews");
+        if (previewBox) previewBox.innerHTML = "";
     }
 
     window.hhOpenAdd = () => openModal("add");
     window.hhCloseModal = closeModal;
 
     window.viewProperty = id => {
-        const property = listings.find(item => item.id === id);
-        if (property) openModal("view", property);
+        window.location.href = `roomdetails.html?id=${id}`;
     };
 
     window.editProperty = id => {
@@ -426,8 +453,6 @@ document.addEventListener("DOMContentLoaded", () => {
     form?.addEventListener("submit", event => {
         event.preventDefault();
 
-        if (modalMode === "view") return;
-
         const name = document.getElementById("hh-name").value.trim();
         const location = document.getElementById("hh-location").value.trim();
         const price = Number(document.getElementById("hh-price").value);
@@ -436,7 +461,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const wifi = document.getElementById("hh-wifi").value.trim();
         const bath = document.getElementById("hh-bath").value.trim();
         const owner = document.getElementById("hh-owner").value.trim();
-        const image = document.getElementById("hh-image").value.trim();
         const status = document.getElementById("hh-status").value;
 
         if (!name || !location || !room || !wifi || !bath || !owner ||
@@ -446,12 +470,14 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (image && !/^https?:\/\//i.test(image)) {
-            alert("Please enter a valid image URL beginning with http:// or https://.");
-            return;
-        }
-
         const existing = listings.find(item => item.id === currentId);
+
+        let finalImages = activeUploadedImages.filter(Boolean);
+        if (finalImages.length === 0) {
+            finalImages = existing?.images && existing.images.length > 0 
+                ? existing.images 
+                : ["bh2.jpg"];
+        }
 
         const property = {
             id: existing?.id || makeId(),
@@ -463,10 +489,8 @@ document.addEventListener("DOMContentLoaded", () => {
             wifi,
             bath,
             owner,
-            image: image || existing?.image || "",
-            images: image
-                ? [image]
-                : (existing?.images || []),
+            image: finalImages[0],
+            images: finalImages,
             status
         };
 
@@ -493,7 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
     searchInput?.addEventListener("input", renderListings);
     filterSelect?.addEventListener("change", renderListings);
 
-    // Image slideshow controls
+    // Image slideshow controls with smooth crossfade & dot updates
     window.moveListingSlide = (id, direction) => {
         const property = listings.find(item => item.id === id);
         if (!property) return;
@@ -505,17 +529,36 @@ document.addEventListener("DOMContentLoaded", () => {
         const next = (current + direction + images.length) % images.length;
         slideIndexes[id] = next;
 
-        const slideTrack = document.getElementById(`slides-${id}`);
-        if (slideTrack) {
-            slideTrack.style.transform =
-                `translateX(-${next * (100 / images.length)}%)`;
-        }
+        const container = document.getElementById(`slides-${id}`);
+        if (!container) return;
+
+        const slideImgs = container.querySelectorAll("img");
+        slideImgs.forEach((img, idx) => {
+            if (idx === next) {
+                img.classList.remove("opacity-0");
+                img.classList.add("opacity-100");
+            } else {
+                img.classList.remove("opacity-100");
+                img.classList.add("opacity-0");
+            }
+        });
+
+        // Update dots
+        images.forEach((_, dotIdx) => {
+            const dot = document.querySelector(`[data-dot-for="${id}-${dotIdx}"]`);
+            if (dot) {
+                if (dotIdx === next) {
+                    dot.className = "h-1.5 rounded-full transition-all bg-white w-4";
+                } else {
+                    dot.className = "h-1.5 rounded-full transition-all bg-white/50 w-1.5";
+                }
+            }
+        });
     };
 
     // Dark mode
     window.toggleDarkMode = () => {
         const isDark = document.documentElement.classList.toggle("dark");
-
         document.documentElement.classList.toggle("light", !isDark);
 
         try {
@@ -564,60 +607,6 @@ document.addEventListener("DOMContentLoaded", () => {
             window.showSlide(heroIndex + 1);
         }, 5000);
     }
-
-    // Sharing helpers
-    window.shareRoom = async name => {
-        const shareData = {
-            title: name,
-            text: `Check out ${name} on HelpHive!`,
-            url: window.location.href
-        };
-
-        try {
-            if (navigator.share) {
-                await navigator.share(shareData);
-            } else if (navigator.clipboard) {
-                await navigator.clipboard.writeText(
-                    `${shareData.text} ${shareData.url}`
-                );
-                alert("Listing link copied!");
-            } else {
-                prompt("Copy this listing link:", window.location.href);
-            }
-        } catch (error) {
-            if (error.name !== "AbortError") {
-                console.error("Sharing failed:", error);
-            }
-        }
-    };
-
-    window.emailRoom = name => {
-        const subject = encodeURIComponent(`HelpHive listing: ${name}`);
-        const body = encodeURIComponent(
-            `Hi, I would like to know more about ${name}.\n${window.location.href}`
-        );
-        window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    };
-
-    window.shareFacebook = name => {
-        const url = encodeURIComponent(window.location.href);
-        window.open(
-            `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-            "_blank",
-            "noopener,noreferrer"
-        );
-    };
-
-    window.shareWhatsApp = name => {
-        const message = encodeURIComponent(
-            `Check out ${name} on HelpHive: ${window.location.href}`
-        );
-        window.open(
-            `https://wa.me/?text=${message}`,
-            "_blank",
-            "noopener,noreferrer"
-        );
-    };
 
     // Close modal when clicking the backdrop or pressing Escape.
     modal?.addEventListener("click", event => {

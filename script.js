@@ -143,9 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 console.log("Property owner account detected.");
 
-                // TEMPORARY: Redirect property owners to the existing dashboard.
-                // TODO: Change this to "owner-dashboard.html" when the owner dashboard is created.
-                window.location.href = "dashboard.html";
+                window.location.href = "dashowner.html";
 
                 return;
             }
