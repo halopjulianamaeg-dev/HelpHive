@@ -516,6 +516,5 @@ document.addEventListener("DOMContentLoaded", function () {
         openModal(room, "whatsapp");
     };
 });
-
 // Change every 3.5 seconds
 setInterval(changeHeroImage, 2500);
